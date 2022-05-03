@@ -9,3 +9,7 @@
 !LICENCE
 !README.md
 !SECURITY.md
+
+!__templates/
+!files/
+!files/*
