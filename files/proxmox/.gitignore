@@ -1,0 +1,11 @@
+*
+!.git
+!.gitignore
+!.gitempty
+!README.md
+
+!*.tf
+credentials*
+
+!vms/
+!vms/*.tf
