@@ -1,0 +1,92 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: <NAMESPACE>
+# ------------------------------------------------------------------------------
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <APP_NAME> # name of the deployment
+  namespace: <NAMESPACE> # name of the namespace
+  labels:
+    app: <APP_NAME> # name of your application
+# .......................................
+spec:
+  replicas: 1 # Number of replicas
+  selector:
+    matchLabels:
+      app: <APP_NAME> # name of your application
+  template:
+    metadata:
+      labels:
+        app: <APP_NAME> # name of your application
+    spec:
+      containers:
+        - name: nginx # name of the container
+          image: nginx:latest # the image you want to run
+          # resources:
+          #   limits:
+          #     memory: 512Mi
+          #     cpu: "1"
+          #   requests:
+          #     memory: 256Mi
+          #     cpu: "0.2"
+          ports:
+            - name: http
+              containerPort: 8080 # the port that your application uses
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+          # volumeMounts:
+          #   - mountPath: /var/www/html # the path that your application uses
+          #     name: vol0 # name of the volume
+      # volumes:
+      #   - name: vol0 # name of the volume
+      #     persistentVolumeClaim:
+      #       claimName: pvc0 # name of the persistent volume claim
+# ------------------------------------------------------------------------------
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: <APP_NAME>
+  namespace: <NAMESPACE>
+# .......................................
+spec:
+  selector:
+    app: <APP_NAME>
+  type: ClusterIP
+  # ClusterIP means this service can be accessed by any pod in the cluster
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 80
+      protocol: TCP
+# ------------------------------------------------------------------------------
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: <APP_NAME>
+  namespace: <NAMESPACE>
+# .......................................
+spec:
+  rules:
+    - host: "TODO.home.local"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: <APP_NAME> # the name of the service
+                port:
+                  number: 80 # service port-number
+# ------------------------------------------------------------------------------
