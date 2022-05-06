@@ -14,6 +14,16 @@ terraform {
       source  = "hashicorp/helm"
       version = "2.5.1"
     }
+
+    # docker = {
+    #   source  = "kreuzwerker/docker"
+    #   version = "2.16.0"
+    # }
+
+    # cloudflare = {
+    #   source  = "cloudflare/cloudflare"
+    #   version = "~> 3.0"
+    # }
   }
 }
 
@@ -52,6 +62,15 @@ provider "helm" {
   }
 }
 
+# provider "docker" {
+#   host = var.docker_config_host
+# }
+
+# provider "cloudflare" {
+#   email   = var.cloudflare_email
+#   api_key = var.cloudflare_api_key
+# }
+
 # ------------------------------------------------------------------------------
 
 variable "kube_config_path" {
@@ -61,5 +80,13 @@ variable "kube_config_path" {
 variable "kube_config_context" {
   type = string
 }
+
+# variable "docker_config_host" {
+#   type = string
+# }
+
+# variable "cloudflare_api_key" {
+#   type = string
+# }
 
 # ------------------------------------------------------------------------------

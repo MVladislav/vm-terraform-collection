@@ -1,8 +1,7 @@
 *
-!.git
 !.gitignore
 !.gitempty
 !README.md
 
 !*.tf
-credentials*
+*.auto.tfvars
