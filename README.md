@@ -36,7 +36,7 @@ check script:
 $terraform plan
 ```
 
-eun script:
+run script:
 
 ```sh
 $terraform apply
