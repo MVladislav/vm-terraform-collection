@@ -1,0 +1,7 @@
+*
+!.gitignore
+!.gitempty
+!README.md
+
+!*.tf
+*.auto.tfvars
