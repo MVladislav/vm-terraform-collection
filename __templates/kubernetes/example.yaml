@@ -67,7 +67,7 @@ spec:
   ports:
     - name: http
       port: 8080
-      targetPort: 80
+      targetPort: 8080
       protocol: TCP
 # ------------------------------------------------------------------------------
 ---
@@ -88,5 +88,5 @@ spec:
               service:
                 name: <APP_NAME> # the name of the service
                 port:
-                  number: 80 # service port-number
+                  number: 8080 # service port-number
 # ------------------------------------------------------------------------------
