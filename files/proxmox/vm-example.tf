@@ -1,5 +1,5 @@
 resource "proxmox_vm_qemu" "ubuntu_vm_clone" {
-  count       = 2
+  count       = 3
   name        = "${var.proxmox_vm_name}-0${count.index + 1}"
   desc        = "${var.proxmox_vm_desc} 0${count.index + 1}"
   vmid        = var.proxmox_vm_id + count.index
