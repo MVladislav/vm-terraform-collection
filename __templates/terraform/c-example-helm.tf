@@ -26,6 +26,7 @@ resource "helm_release" "example_template_change_me_namespace" {
 
   repository = "..."
   chart      = "..."
+  version    = "..."
 
   # DEFAULT setup
   set {
