@@ -27,8 +27,8 @@ kube_config_context = "<CONTEXT>"
 # cloudflare_email   = ""
 # cloudflare_api_key = ""
 
-cert_manager_secret_crt = "base64-crt"
-cert_manager_secret_key = "base64-key"
+cert_manager_secret_crt = "<base64-crt>"
+cert_manager_secret_key = "<base64-key>"
 ```
 
 ## Kubernetes setup [server]
