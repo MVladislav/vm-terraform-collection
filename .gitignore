@@ -1,7 +1,10 @@
-/*
-!.git
-!.github
-!.vscode
+*
+!.git/
+!.git/**
+!.github/
+!.github/**
+!.vscode/
+!.vscode/**
 !.gitignore
 !.gitempty
 
@@ -11,5 +14,6 @@
 !SECURITY.md
 
 !__templates/
+!__templates/**
 !files/
-!files/*
+!files/**
