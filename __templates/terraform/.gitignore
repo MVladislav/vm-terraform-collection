@@ -5,3 +5,7 @@
 
 !*.tf
 *.auto.tfvars
+
+!values/
+values/*
+!values/*.yaml

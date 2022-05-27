@@ -22,6 +22,10 @@ create file named `credentials.auto.tfvars` and fill it like following:
 ```tf
 kube_config_path    = "~/.kube/config"
 kube_config_context = "<CONTEXT>"
+# docker_config_host  = "unix:///var/run/docker.sock"
+
+kube_cert_cluster_issuer = "<NAME>"
+kube_cert_ingress_class = "traefik"
 ```
 
 ---

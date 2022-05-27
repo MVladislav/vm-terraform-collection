@@ -41,24 +41,49 @@ resource "helm_release" "example_template_change_me_namespace" {
   }
   set {
     name  = "ingress.className"
-    value = "traefik"
-  }
-  set {
-    name  = "ingress.tls"
-    value = true
-  }
-  set {
-    name  = "ingress.secretName"
-    value = "example-template-change-me-app-name"
-  }
-  set {
-    name  = "ingress.hostname"
-    value = "example-host.home.local"
+    value = var.kube_cert_ingress_class
   }
   set {
     name  = "ingress.annotations.cert-manager\\.io/cluster-issuer"
-    value = "example-template-change-me-selfsigned-cluster"
+    value = var.kube_cert_cluster_issuer
   }
+  set {
+    name  = "ingress.annotations.traefik\\.ingress\\.kubernetes\\.io/router\\.entrypoints"
+    value = "websecure"
+  }
+  # # TLS (1)
+  # set {
+  #   name  = "ingress.tls"
+  #   value = true
+  # }
+  # set {
+  #   name  = "ingress.secretName"
+  #   value = "example-template-change-me-app-name"
+  # }
+  # set {
+  #   name  = "ingress.hostname"
+  #   value = "example-host.home.local"
+  # }
+  # # TLS (2)
+  # set {
+  #   name  = "ingress.hosts[0]"
+  #   value = "example-host.home.local"
+  # }
+  # set {
+  #   name  = "ingress.tls[0].secretName"
+  #   value = "example-template-change-me-app-name"
+  # }
+  # set {
+  #   name  = "ingress.tls[0].hosts[0]"
+  #   value = "example-host.home.local"
+  # }
+
+  # LOAD from values-file
+  values = [
+    templatefile("values/values.yaml", {
+
+    })
+  ]
 
 }
 
@@ -74,46 +99,49 @@ resource "time_sleep" "wait_for_example_template_change_me_namespace" {
 
 # ------------------------------------------------------------------------------
 
-# resource "kubernetes_ingress_v1" "example_template_change_me_namespace" {
+resource "kubernetes_ingress_v1" "example_template_change_me_namespace" {
 
-#   depends_on = [time_sleep.wait_for_example_template_change_me_namespace]
+  depends_on = [time_sleep.wait_for_example_template_change_me_namespace]
 
-#   metadata {
-#     name      = "example-template-change-me-app-name"
-#     namespace = "example-template-change-me-namespace"
-#     annotations = {
-#       "cert-manager.io/cluster-issuer"                      = "example-template-change-me-selfsigned-cluster"
-#       "kubernetes.io/ingress.class"                         = "traefik"
-#       "traefik.ingress.kubernetes.io/frontend-entry-points" = "https"
-#     }
-#   }
+  metadata {
+    name      = "example-template-change-me-app-name"
+    namespace = "example-template-change-me-namespace"
+    annotations = {
+      "cert-manager.io/cluster-issuer"                   = var.kube_cert_cluster_issuer
+      "traefik.ingress.kubernetes.io/router.entrypoints" = var.kube_traefik_entrypoints
+      "traefik.ingress.kubernetes.io/router.tls"         = var.kube_traefik_tls
+      "traefik.ingress.kubernetes.io/router.middlewares" = var.kube_traefik_middlewares
+    }
+  }
 
-#   spec {
-#     rule {
-#       host = "example-host.home.local"
+  spec {
+    ingress_class_name = var.kube_cert_ingress_class
 
-#       http {
-#         path {
-#           path      = "/"
-#           path_type = "Prefix"
+    rule {
+      host = "example-host.${var.kube_public_hostname}"
 
-#           backend {
-#             service {
-#               name = "example-template-change-me-app-name"
-#               port {
-#                 number = 80
-#               }
-#             }
-#           }
-#         }
-#       }
-#     }
+      http {
+        path {
+          path      = "/"
+          path_type = "Prefix"
 
-#     # (Optional) Add an SSL Certificate
-#     tls {
-#       secret_name = "example-template-change-me-app-name"
-#       hosts       = ["example-host.home.local"]
-#     }
-#   }
+          backend {
+            service {
+              name = "example-template-change-me-app-name"
+              port {
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
 
-# }
+    # (Optional) Add an SSL Certificate
+    tls {
+      secret_name = "example-template-change-me-app-name"
+      hosts       = ["example-host.${var.kube_public_hostname}"]
+    }
+  }
+
+}
