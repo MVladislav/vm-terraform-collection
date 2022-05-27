@@ -19,7 +19,9 @@ resource "helm_release" "cert_manager" {
 
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
+  version    = "1.8.0"
 
+  # DEFAULT setup
   set {
     name  = "replicaCount"
     value = 2
@@ -44,16 +46,6 @@ resource "time_sleep" "wait_for_certmanager" {
 }
 
 # ------------------------------------------------------------------------------
-
-variable "cert_manager_secret_crt" {
-  type      = string
-  sensitive = true
-}
-
-variable "cert_manager_secret_key" {
-  type      = string
-  sensitive = true
-}
 
 resource "kubectl_manifest" "cert_manager_selfsigned_secret" {
 
@@ -85,7 +77,7 @@ resource "kubectl_manifest" "cert_manager_selfsigned_custer" {
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: cert-manager-selfsigned-cluster
+  name: ${var.kube_cert_cluster_issuer}
 spec:
   ca:
     secretName: cert-manager-home-local
@@ -96,7 +88,7 @@ spec:
 
 resource "kubectl_manifest" "cert_manager_selfsigned_cert" {
 
-  depends_on = [time_sleep.wait_for_certmanager]
+  depends_on = [kubectl_manifest.cert_manager_selfsigned_custer]
 
   yaml_body = <<YAML
 ---
@@ -122,7 +114,7 @@ YAML
 
 resource "time_sleep" "wait_for_clusterissuer" {
 
-  depends_on = [kubectl_manifest.cert_manager_selfsigned_custer]
+  depends_on = [kubectl_manifest.cert_manager_selfsigned_cert]
 
   create_duration = "30s"
 

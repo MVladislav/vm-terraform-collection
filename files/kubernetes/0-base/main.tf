@@ -19,6 +19,7 @@ terraform {
     #   source  = "cloudflare/cloudflare"
     #   version = "~> 3.0"
     # }
+
   }
 
 }
@@ -70,6 +71,14 @@ variable "kube_config_path" {
 }
 
 variable "kube_config_context" {
+  type = string
+}
+
+variable "kube_cert_cluster_issuer" {
+  type = string
+}
+
+variable "kube_cert_ingress_class" {
   type = string
 }
 

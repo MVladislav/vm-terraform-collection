@@ -24,11 +24,17 @@ create file named `credentials.auto.tfvars` and fill it like following:
 kube_config_path    = "~/.kube/config"
 kube_config_context = "<CONTEXT>"
 
+kube_cert_cluster_issuer = "<NAME>"
+kube_cert_ingress_class = "traefik"
+
 # cloudflare_email   = ""
 # cloudflare_api_key = ""
 
 cert_manager_secret_crt = "<base64-crt>"
 cert_manager_secret_key = "<base64-key>"
+
+traefik_username = "<USERNAME>"
+traefik_password = "<PASSWORD>"
 ```
 
 ## Kubernetes setup [server]
@@ -51,7 +57,8 @@ install slave server:
 $curl -sfL https://get.k3s.io | sh -s - server \
 --token=<TOKEN> \
 --tls-san <DNS-NAME-MAIN> --tls-san <IP-ADDRESS-MAIN> \
---server <IP-ADDRESS-MAIN>:6443
+--no-deploy traefik \
+--server https://<IP-ADDRESS-MAIN>:6443
 ```
 
 install agents:
@@ -127,6 +134,12 @@ $sudo apt install helm --classic
 - <https://rancher.com/docs/k3s/latest/en/installation/ha-embedded/>
 - <https://helm.sh/docs/intro/install>
 - <https://kubernetes.io/docs/tutorials/kubernetes-basics/explore/explore-intro/>
+- traefik
+  - <https://artifacthub.io/packages/helm/traefik/traefik?modal=values&path=securityContext>
+  - <https://doc.traefik.io/traefik/routing/providers/kubernetes-ingress/>
+- longhorn
+  - <https://artifacthub.io/packages/helm/longhorn/longhorn>
+  - <https://www.youtube.com/watch?v=eKBBHc0t7bc>
 
 ---
 
