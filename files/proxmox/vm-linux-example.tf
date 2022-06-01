@@ -16,20 +16,19 @@ resource "proxmox_vm_qemu" "ubuntu_vm_clone" {
 
   hotplug = "network,disk,usb,cpu,memory"
 
-  cpu = "host"
-  # cpu     = "kvm64"
-  cores   = 1
+  cpu     = var.proxmox_vm_cpu
+  cores   = var.proxmox_vm_cores
   sockets = 1
   numa    = true
 
-  memory  = 2048
+  memory  = var.proxmox_vm_memory_gb * 1024
   balloon = 0
 
   scsihw = "virtio-scsi-pci"
   disk {
     storage  = "local-zfs"
     type     = "scsi"
-    size     = "8G"
+    size     = "${var.proxmox_vm_size_gb}G"
     ssd      = 1
     backup   = 1
     discard  = "on"

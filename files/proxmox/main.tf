@@ -81,3 +81,19 @@ variable "proxmox_vm_bridge" {
 variable "proxmox_vm_macaddr" {
   type = string
 }
+
+variable "proxmox_vm_cpu" {
+  type = string
+}
+
+variable "proxmox_vm_cores" {
+  type = string
+}
+
+variable "proxmox_vm_memory_gb" {
+  type = string
+}
+
+variable "proxmox_vm_size_gb" {
+  type = string
+}

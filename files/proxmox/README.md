@@ -24,8 +24,8 @@
 create **group**:: go into `Datacenter > Permissions > Groups`,
 and create a group for **terrform** (name it terrform)
 
-create **permission**:: go into `Datacenter > Groups`,
-and create a new permission, with **following values**:
+create **permission**:: go into `Datacenter > Permissions`,
+and create a new **group permission**, with **following values**:
 
 - Path: `/`
 - Group: `terrform`
@@ -54,7 +54,7 @@ and create a token which the user can use, we current created, with **follwing v
 
 - User: `terrform@pve`
 - Token ID: `terrform`
-- Privilege Seperation: ` ` _(empty)_
+- Privilege Seperation: `` _(empty)_
 
 ### create credentials for terraform
 
