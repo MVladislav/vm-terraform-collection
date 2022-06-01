@@ -49,8 +49,17 @@ resource "helm_release" "example_template_change_me_namespace" {
   }
   set {
     name  = "ingress.annotations.traefik\\.ingress\\.kubernetes\\.io/router\\.entrypoints"
-    value = "websecure"
+    value = var.kube_traefik_entrypoints
   }
+  set {
+    name  = "ingress.annotations.traefik\\.ingress\\.kubernetes\\.io/router\\.tls"
+    value = var.kube_traefik_tls
+  }
+  set {
+    name  = "ingress.annotations.traefik\\.ingress\\.kubernetes\\.io/router\\.middlewares"
+    value = var.kube_traefik_middlewares
+  }
+
   # # TLS (1)
   # set {
   #   name  = "ingress.tls"
