@@ -8,7 +8,7 @@ resource "proxmox_vm_qemu" "ubuntu_vm_clone" {
   clone      = var.proxmox_vm_template_clone
   full_clone = true
 
-  agent = 0
+  agent = 1
   # boot     = "cdn"
   bootdisk = "scsi0"
   onboot   = false
