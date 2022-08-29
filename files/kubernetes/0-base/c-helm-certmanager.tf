@@ -56,7 +56,7 @@ resource "kubectl_manifest" "cert_manager_selfsigned_secret" {
 apiVersion: v1
 kind: Secret
 metadata:
-  name: cert-manager-home-local
+  name: cert-manager-secret-certificate
   namespace: cert-manager
 data:
   tls.ca: ${var.cert_manager_secret_crt}
@@ -80,7 +80,7 @@ metadata:
   name: ${var.kube_cert_cluster_issuer}
 spec:
   ca:
-    secretName: cert-manager-home-local
+    secretName: cert-manager-secret-certificate
   YAML
 
 }
@@ -101,7 +101,7 @@ spec:
   isCA: true
   duration: 43800h
   commonName: intermediate-ca
-  secretName: cert-manager-home-local
+  secretName: cert-manager-secret-certificate
   privateKey:
     algorithm: ECDSA
     size: 256

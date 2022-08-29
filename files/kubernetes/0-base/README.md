@@ -30,6 +30,7 @@ kube_cert_ingress_class = "traefik"
 # cloudflare_email   = ""
 # cloudflare_api_key = ""
 
+# run `$cat <crt|key-file> | base64 -w 0`
 cert_manager_secret_crt = "<base64-crt>"
 cert_manager_secret_key = "<base64-key>"
 
