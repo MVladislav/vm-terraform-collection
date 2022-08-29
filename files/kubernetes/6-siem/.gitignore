@@ -1,0 +1,11 @@
+*
+!.gitignore
+!.gitempty
+!README.md
+
+!*.tf
+*.auto.tfvars
+
+!values/
+values/*
+!values/*.yaml
