@@ -8,6 +8,7 @@
 
 - [SETUP](#setup)
   - [create `credentials` file](#create-credentials-file)
+    - [create self-signed-cert](#create-self-signed-cert)
   - [Kubernetes setup [server]](#kubernetes-setup-server)
   - [Kubectl setup [client]](#kubectl-setup-client)
     - [get cluster conf to connect to](#get-cluster-conf-to-connect-to)
@@ -36,6 +37,15 @@ cert_manager_secret_key = "<base64-key>"
 
 traefik_username = "<USERNAME>"
 traefik_password = "<PASSWORD>"
+```
+
+### create self-signed-cert
+
+```sh
+$openssl genrsa -out ca.key 4096
+$openssl req -new -x509 -sha256 -days 365 -key ca.key -out ca.crt
+$cat ca.crt | base64 -w 0
+$cat ca.key | base64 -w 0
 ```
 
 ## Kubernetes setup [server]
