@@ -175,6 +175,16 @@ $qm set 9999 --serial0 socket --vga serial0
 $qm set 9999 --agent 1
 $qm set 9999 --hotplug disk,network,usb
 
+$mkdir -p /var/lib/vz/snippets
+$cat <<EOF >>/var/lib/vz/snippets/vendor.yaml
+#cloud-config
+runcmd:
+    - apt update
+    - apt install -y qemu-guest-agent
+    - systemctl start qemu-guest-agent
+EOF
+$qm set 9999 --cicustom "vendor=local:snippets/vendor.yaml"
+
 # convert to template
 $qm template 9999
 ```
