@@ -39,11 +39,13 @@ proxmox_vm_ci_user = "<USERNAME>"
 proxmox_vm_ci_pw   = "<PASSWORD>"
 proxmox_vm_ssh_key = "<SSH_PUBLIC_KEY>"
 
-proxmox_vm_name           = "ubuntu-impish"
-proxmox_vm_desc           = "Ubuntu Server 21.10 (Impish)"
+proxmox_vm_name           = "ubuntu-jammy"
+proxmox_vm_desc           = "Ubuntu Server 22.04 (Jammy)"
 proxmox_vm_id             = "666"
 proxmox_vm_target_node    = "proxmox"
-proxmox_vm_template_clone = "template-ubuntu-impish-cloud-init"
+proxmox_vm_template_clone = "template-ubuntu-jammy-cloud-init"
+
+proxmox_vm_storage_name = "local-zfs"
 
 proxmox_vm_bridge  = "vmbr0"
 # do not add a last number at the end, this will be auto-gen at least for 9 vm's

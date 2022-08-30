@@ -86,6 +86,10 @@ variable "proxmox_vm_template_clone" {
   type = string
 }
 
+variable "proxmox_vm_storage_name" {
+  type = string
+}
+
 variable "proxmox_vm_bridge" {
   type = string
 }
