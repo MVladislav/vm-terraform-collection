@@ -9,6 +9,7 @@
 - [SETUP](#setup)
   - [create `credentials` file](#create-credentials-file)
     - [create self-signed-cert](#create-self-signed-cert)
+    - [create traefik conf files](#create-traefik-conf-files)
   - [Kubernetes setup [server]](#kubernetes-setup-server)
   - [Kubectl setup [client]](#kubectl-setup-client)
     - [get cluster conf to connect to](#get-cluster-conf-to-connect-to)
@@ -28,9 +29,6 @@ kube_config_context = "<CONTEXT>"
 kube_cert_cluster_issuer = "<NAME>"
 kube_cert_ingress_class = "traefik"
 
-# cloudflare_email   = ""
-# cloudflare_api_key = ""
-
 # run `$cat <crt|key-file> | base64 -w 0`
 cert_manager_secret_crt = "<base64-crt>"
 cert_manager_secret_key = "<base64-key>"
@@ -46,6 +44,14 @@ $openssl genrsa -out ca.key 4096
 $openssl req -new -x509 -sha256 -days 365 -key ca.key -out ca.crt
 $cat ca.crt | base64 -w 0
 $cat ca.key | base64 -w 0
+```
+
+### create traefik conf files
+
+> they can be empty, but are needed
+
+```sh
+$mkdir -p values && touch values/{traefik,traefik-config,traefik-config-http,traefik-config-tcp,traefik-config-udp}.yaml
 ```
 
 ## Kubernetes setup [server]
@@ -76,7 +82,7 @@ install agents:
 
 ```sh
 $curl -sfL https://get.k3s.io | sh -s - agent \
---token <TOKEN> \
+--token=<TOKEN> \
 --server https://<IP-ADDRESS-MAIN>:6443
 ```
 

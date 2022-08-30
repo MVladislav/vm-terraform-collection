@@ -18,12 +18,12 @@ resource "helm_release" "longhorn" {
 
   repository = "https://charts.longhorn.io"
   chart      = "longhorn"
-  version    = "1.2.4"
+  version    = var.version_longhorn
 
   # DEFAULT setup
   set {
     name  = "persistence.defaultClassReplicaCount"
-    value = 3
+    value = 1
   }
   set {
     name  = "persistence.reclaimPolicy"
@@ -57,7 +57,7 @@ resource "helm_release" "longhorn" {
   }
   set {
     name  = "ingress.host"
-    value = "longhorn.home.local"
+    value = "longhorn.${var.traefik_local_domain}"
   }
 
 }

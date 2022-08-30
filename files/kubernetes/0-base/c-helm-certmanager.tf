@@ -19,12 +19,12 @@ resource "helm_release" "cert_manager" {
 
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "1.8.0"
+  version    = var.version_cert_manager
 
   # DEFAULT setup
   set {
     name  = "replicaCount"
-    value = 2
+    value = 1
   }
 
   # install kubernetes CRDs (CRD -> Customer Role Definitions)

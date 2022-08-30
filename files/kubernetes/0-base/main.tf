@@ -15,10 +15,6 @@ terraform {
       source  = "hashicorp/helm"
       version = "2.5.1"
     }
-    # cloudflare = {
-    #   source  = "cloudflare/cloudflare"
-    #   version = "~> 3.0"
-    # }
 
   }
 
@@ -29,40 +25,19 @@ terraform {
 provider "kubernetes" {
   config_path    = var.kube_config_path
   config_context = var.kube_config_context
-
-  # host                   = yamldecode(TODO).clusters.0.cluster.server
-  # client_certificate     = base64decode(yamldecode(TODO).users.0.user.client-certificate-data)
-  # client_key             = base64decode(yamldecode(TODO).users.0.user.client-key-data)
-  # cluster_ca_certificate = base64decode(yamldecode(TODO).clusters.0.cluster.certificate-authority-data)
 }
 
 provider "kubectl" {
   config_path    = var.kube_config_path
   config_context = var.kube_config_context
-
-  # host                   = yamldecode(TODO).clusters.0.cluster.server
-  # client_certificate     = base64decode(yamldecode(TODO).users.0.user.client-certificate-data)
-  # client_key             = base64decode(yamldecode(TODO).users.0.user.client-key-data)
-  # cluster_ca_certificate = base64decode(yamldecode(TODO).clusters.0.cluster.certificate-authority-data)
-  # load_config_file       = false
 }
 
 provider "helm" {
   kubernetes {
     config_path    = var.kube_config_path
     config_context = var.kube_config_context
-
-    # host                   = yamldecode(TODO).clusters.0.cluster.server
-    # client_certificate     = base64decode(yamldecode(TODO).users.0.user.client-certificate-data)
-    # client_key             = base64decode(yamldecode(TODO).users.0.user.client-key-data)
-    # cluster_ca_certificate = base64decode(yamldecode(TODO).clusters.0.cluster.certificate-authority-data)
   }
 }
-
-# provider "cloudflare" {
-#   email   = var.cloudflare_email
-#   api_key = var.cloudflare_api_key
-# }
 
 # ------------------------------------------------------------------------------
 
@@ -81,13 +56,5 @@ variable "kube_cert_cluster_issuer" {
 variable "kube_cert_ingress_class" {
   type = string
 }
-
-# variable "cloudflare_email" {
-#   type = string
-# }
-
-# variable "cloudflare_api_key" {
-#   type = string
-# }
 
 # ------------------------------------------------------------------------------

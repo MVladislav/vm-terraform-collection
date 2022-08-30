@@ -19,7 +19,7 @@ resource "helm_release" "kubernetes_dashboard" {
 
   repository = "https://kubernetes.github.io/dashboard"
   chart      = "kubernetes-dashboard"
-  version    = "5.4.1"
+  version    = var.version_kubernetes_dashboard
 
   # DEFAULT setup
   set {
@@ -65,7 +65,7 @@ resource "helm_release" "kubernetes_dashboard" {
   }
   set {
     name  = "ingress.hosts[0]"
-    value = "k3s.home.local"
+    value = "k3s.${var.traefik_local_domain}"
   }
   set {
     name  = "ingress.tls[0].secretName"
@@ -73,7 +73,7 @@ resource "helm_release" "kubernetes_dashboard" {
   }
   set {
     name  = "ingress.tls[0].hosts[0]"
-    value = "k3s.home.local"
+    value = "k3s.${var.traefik_local_domain}"
   }
 
 }
