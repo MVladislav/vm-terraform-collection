@@ -93,6 +93,7 @@ metadata:
   name: uptime-kuma
   namespace: monitoring
   annotations:
+    kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
