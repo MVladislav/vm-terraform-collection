@@ -19,14 +19,15 @@ spec:
     spec:
       containers:
         - name: checkmk # name of the container
-          image: checkmk/check-mk-raw:2.1.0p11 # the image you want to run
+          image: checkmk/check-mk-free:2.1.0p11 # the image you want to run
+          # image: checkmk/check-mk-raw:2.1.0p11 # the image you want to run
           resources:
-            limits:
-              memory: 1Gi
-              cpu: "2"
+            # limits:
+            #   memory: 1Gi
+            #   cpu: "2"
             requests:
-              memory: 256Mi
-              cpu: "0.2"
+              memory: 500Mi
+              cpu: "1"
           env:
             - name: CMK_SITE_ID
               valueFrom:
