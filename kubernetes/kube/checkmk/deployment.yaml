@@ -50,6 +50,7 @@ spec:
               mountPath: /opt/omd/sites/cmk/tmp
             - name: data
               mountPath: /omd/sites
+      restartPolicy: Always
       volumes:
         - name: localtime
           hostPath:
