@@ -19,6 +19,22 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: cluster-collector
+  namespace: checkmk-n
+spec:
+  # If ingress is used:
+  # type: LoadBalancer
+  selector:
+    app: cluster-collector
+  ports:
+    - name: api
+      port: 80
+      targetPort: 10050
+      protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
   name: cluster-collector-nodeport
   namespace: checkmk-n
 spec:
