@@ -3,7 +3,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: checkmk
-  namespace: monitoring
+  namespace: checkmk-n
   annotations:
     cert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
     traefik.ingress.kubernetes.io/router.entrypoints: websecure

@@ -3,7 +3,7 @@
 # kind: StatefulSet
 # metadata:
 #   name: checkmk # name of the deployment
-#   namespace: monitoring # name of the namespace
+#   namespace: checkmk-n # name of the namespace
 #   labels:
 #     app: checkmk # name of your application
 # # .......................................
