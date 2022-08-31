@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: uptime-kuma # name of the container
-          image: louislam/uptime-kuma:1.11.4 # the image you want to run
+          image: louislam/uptime-kuma:1.18.0-beta.0 # the image you want to run
           resources:
             limits:
               memory: 512Mi
