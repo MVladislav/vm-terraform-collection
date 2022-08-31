@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: checkmk # name of the container
-          image: checkmk/check-mk-free:2.1.0-latest # the image you want to run
+          image: checkmk/check-mk-raw:2.1.0p11 # the image you want to run
           resources:
             limits:
               memory: 1Gi
