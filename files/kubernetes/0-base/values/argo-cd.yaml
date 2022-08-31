@@ -1,0 +1,7 @@
+# ingress healty status
+server.config.resource.customizations: |
+  networking.k8s.io/Ingress:
+      health.lua: |
+        hs = {}
+        hs.status = "Healthy"
+        return hs

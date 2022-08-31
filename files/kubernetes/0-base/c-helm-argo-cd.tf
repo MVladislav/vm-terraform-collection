@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "argo_cd" {
 
-  # depends_on = [time_sleep.wait_for_kubernetes]
+  depends_on = [time_sleep.traefik]
 
   metadata {
     name = "argo-cd"
@@ -73,6 +73,12 @@ resource "helm_release" "argo_cd" {
     value = "--insecure"
   }
 
+  # LOAD from values-file
+  values = [
+    templatefile("values/argo-cd.yaml", {
+
+    })
+  ]
 
 }
 

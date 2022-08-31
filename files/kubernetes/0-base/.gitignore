@@ -9,3 +9,4 @@
 !values/
 values/*
 !values/traefik.yaml
+!values/argo-cd.yaml
