@@ -1,6 +1,7 @@
 # Enable access rights for Checkmk for monitoring the Kubernetes cluster via the API
-kind: ServiceAccount
+---
 apiVersion: v1
+kind: ServiceAccount
 metadata:
   name: checkmk
   namespace: checkmk-n
