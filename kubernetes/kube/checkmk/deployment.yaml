@@ -12,15 +12,20 @@ spec:
   selector:
     matchLabels:
       app: checkmk # name of your application
+  strategy:
+    type: Recreate
   template:
     metadata:
       labels:
         app: checkmk # name of your application
     spec:
+      serviceAccount: checkmk
+      securityContext: {}
       containers:
         - name: checkmk # name of the container
           image: checkmk/check-mk-free:2.1.0p11 # the image you want to run
           # image: checkmk/check-mk-raw:2.1.0p11 # the image you want to run
+          imagePullPolicy: IfNotPresent
           resources:
             # limits:
             #   memory: 1Gi

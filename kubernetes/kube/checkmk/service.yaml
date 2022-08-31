@@ -8,8 +8,8 @@ metadata:
 spec:
   selector:
     app: checkmk
-  type: ClusterIP
-  # ClusterIP means this service can be accessed by any pod in the cluster
+  type: NodePort
+  sessionAffinity: None
   ports:
     - name: http
       port: 5000
