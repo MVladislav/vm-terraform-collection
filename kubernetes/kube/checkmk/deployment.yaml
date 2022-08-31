@@ -34,6 +34,11 @@ spec:
               memory: 500Mi
               cpu: "1"
           env:
+            - name: CMK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: checkmk
+                  key: password
             - name: CMK_SITE_ID
               valueFrom:
                 configMapKeyRef:
