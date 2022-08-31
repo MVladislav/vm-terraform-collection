@@ -26,6 +26,11 @@ kube_config_context = "<CONTEXT>"
 
 kube_cert_cluster_issuer = "<NAME>"
 kube_cert_ingress_class = "traefik"
+
+kube_traefik_entrypoints = "websecure"
+kube_traefik_tls         = "true"
+kube_traefik_middlewares = ""
+kube_public_hostname     = "home.local"
 ```
 
 ---

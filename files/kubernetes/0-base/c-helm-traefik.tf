@@ -24,11 +24,11 @@ resource "helm_release" "traefik" {
   chart      = "traefik"
   version    = var.version_traefik
 
-  # DEFAULT setup
-  set {
-    name  = "deployment.replicas"
-    value = 1
-  }
+  # # DEFAULT setup
+  # set {
+  #   name  = "deployment.replicas"
+  #   value = 1
+  # }
 
   # set traefik as default ingress controller
   set {
@@ -38,6 +38,24 @@ resource "helm_release" "traefik" {
   set {
     name  = "ingressClass.isDefaultClass"
     value = "true"
+  }
+
+  # Default Redirect
+  set {
+    name  = "ports.web.redirectTo"
+    value = "websecure"
+  }
+
+  # Enable TLS on Websecure
+  set {
+    name  = "ports.websecure.tls.enabled"
+    value = "true"
+  }
+
+  # TLS Options (that's not working for some reason...)
+  set {
+    name  = "tlsOptions.default.minVersion"
+    value = "VersionTLS12"
   }
 
   # set {

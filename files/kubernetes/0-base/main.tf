@@ -58,3 +58,21 @@ variable "kube_cert_ingress_class" {
 }
 
 # ------------------------------------------------------------------------------
+
+variable "kube_traefik_entrypoints" {
+  type = string
+}
+
+variable "kube_traefik_tls" {
+  type = string
+}
+
+variable "kube_traefik_middlewares" {
+  type = string
+}
+
+variable "kube_public_hostname" {
+  type = string
+}
+
+# ------------------------------------------------------------------------------

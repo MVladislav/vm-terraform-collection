@@ -1,0 +1,74 @@
+globalArguments:
+  - "--global.sendanonymoususage=false"
+  - "--global.checknewversion=false"
+
+additionalArguments:
+  - "--serversTransport.insecureSkipVerify=true"
+  - "--log.level=INFO"
+
+ingressRoute:
+  dashboard:
+    enabled: false
+
+providers:
+  kubernetesCRD:
+    enabled: true
+    ingressClass: traefik-external
+  kubernetesIngress:
+    enabled: true
+    publishedService:
+      enabled: false
+
+# Logs
+# https://docs.traefik.io/observability/logs/
+logs:
+  # Traefik logs concern everything that happens to Traefik itself (startup, configuration, events, shutdown, and so on).
+  general:
+    format: json
+    # filePath: os.Stdout
+    # filePath: /data/traefik-logs.log
+    # By default, the level is set to ERROR. Alternative logging levels are DEBUG, PANIC, FATAL, ERROR, WARN, and INFO.
+    level: WARN
+  access:
+    enabled: true
+    format: json
+    # filePath: os.Stdout
+    # filePath: /data/traefik-access.log
+    # To write the logs in an asynchronous fashion, specify a bufferingSize option.
+    # This option represents the number of log lines Traefik will keep in memory before writing
+    # them to the selected output. In some cases, this option can greatly help performances.
+    # bufferingSize: 100
+    # Filtering https://docs.traefik.io/observability/access-logs/#filtering
+    filters:
+      {}
+      # statuscodes: "200,300-302"
+      # retryattempts: true
+      # minduration: 10ms
+    # Fields
+    # https://docs.traefik.io/observability/access-logs/#limiting-the-fieldsincluding-headers
+    fields:
+      general:
+        defaultmode: keep
+        names:
+          {}
+          # Examples:
+          # ClientUsername: drop
+      headers:
+        defaultmode: keep
+        names:
+          User-Agent: keep
+          Authorization: drop
+          Content-Type: keep
+
+# TODO: chaneg $$ to $
+metrics:
+  {}
+  # influxdb:
+  #   address: "$${traefik_influxdb_address}"
+  #   protocol: "$${traefik_influxdb_protocol}"
+
+tracing:
+  {}
+  # elastic:
+  #   serverURL: "${traefik_elastic_server_url}"
+  #   secretToken: "${traefik_elastic_secret_token}"

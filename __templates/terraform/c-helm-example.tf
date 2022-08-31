@@ -26,7 +26,7 @@ resource "helm_release" "example_template_change_me_namespace" {
 
   repository = "..."
   chart      = "..."
-  version    = "..."
+  version    = var.version_example_template_change_me_namespace
 
   # DEFAULT setup
   set {
@@ -71,12 +71,12 @@ resource "helm_release" "example_template_change_me_namespace" {
   # }
   # set {
   #   name  = "ingress.hostname"
-  #   value = "example-host.home.local"
+  #   value = "example-host.${var.traefik_local_domain}"
   # }
   # # TLS (2)
   # set {
   #   name  = "ingress.hosts[0]"
-  #   value = "example-host.home.local"
+  #   value = "example-host.${var.traefik_local_domain}"
   # }
   # set {
   #   name  = "ingress.tls[0].secretName"
@@ -84,7 +84,7 @@ resource "helm_release" "example_template_change_me_namespace" {
   # }
   # set {
   #   name  = "ingress.tls[0].hosts[0]"
-  #   value = "example-host.home.local"
+  #   value = "example-host.${var.traefik_local_domain}"
   # }
 
   # LOAD from values-file
