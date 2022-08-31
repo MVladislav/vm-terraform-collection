@@ -27,6 +27,12 @@ spec:
             requests:
               memory: 256Mi
               cpu: "0.2"
+          env:
+            - name: CMK_SITE_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: checkmk
+                  key: siteid
           ports:
             - name: http
               containerPort: 5000 # the port that your application uses
