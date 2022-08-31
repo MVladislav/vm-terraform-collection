@@ -19,7 +19,7 @@ spec:
       labels:
         app: checkmk # name of your application
     spec:
-      serviceAccount: checkmk-account
+      serviceAccountName: checkmk-account
       securityContext: {}
       containers:
         - name: checkmk # name of the container
@@ -67,6 +67,8 @@ spec:
               mountPath: /opt/omd/sites/cmk/tmp
             - name: data
               mountPath: /omd/sites
+            - name: factor-token
+              mountPath: /var/run/secrets/tokens
       restartPolicy: Always
       volumes:
         - name: localtime
@@ -80,3 +82,10 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: checkmk-data
+        - name: factor-token
+          projected:
+            sources:
+              - serviceAccountToken:
+                  audience: factors
+                  expirationSeconds: 600
+                  path: factor-token
