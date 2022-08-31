@@ -9,7 +9,6 @@ metadata:
 # .......................................
 spec:
   replicas: 1 # Number of replicas
-  serviceName: checkmk
   selector:
     matchLabels:
       app: checkmk # name of your application
