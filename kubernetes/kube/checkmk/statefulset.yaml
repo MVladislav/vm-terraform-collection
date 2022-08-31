@@ -1,73 +1,73 @@
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: checkmk # name of the deployment
-  namespace: monitoring # name of the namespace
-  labels:
-    app: checkmk # name of your application
-# .......................................
-spec:
-  replicas: 1 # Number of replicas
-  serviceName: checkmk
-  selector:
-    matchLabels:
-      app: checkmk # name of your application
-  template:
-    metadata:
-      labels:
-        app: checkmk # name of your application
-    spec:
-      containers:
-        - name: checkmk # name of the container
-          image: checkmk/check-mk-free:2.1.0-latest # the image you want to run
-          resources:
-            limits:
-              memory: 1Gi
-              cpu: "2"
-            requests:
-              memory: 256Mi
-              cpu: "0.2"
-          env:
-            - name: PORT
-              value: "5000"
-          ports:
-            - name: http
-              containerPort: 5000 # the port that your application uses
-              protocol: TCP
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 5000
-          #     scheme: HTTP
-          #   initialDelaySeconds: 5
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 5000
-          #   timeoutSeconds: 2
-          #   initialDelaySeconds: 15
-          volumeMounts:
-            # - name: localtime
-            #   mountPath: /etc/localtime
-            # - name: tmpfs
-            #   mountPath: /opt/omd/sites/cmk/tmp
-            - name: data
-              mountPath: /omd/sites
-  volumeClaimTemplates:
-    # - name: localtime
-    #   hostPath:
-    #     path: /etc/localtime
-    #     type: File
-    # - name: tmpfs
-    #   emptyDir:
-    #     medium: Memory
-    #     sizeLimit: 64Mi
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        volumeMode: Filesystem
-        resources:
-          requests:
-            storage: 1Gi
+# ---
+# apiVersion: apps/v1
+# kind: StatefulSet
+# metadata:
+#   name: checkmk # name of the deployment
+#   namespace: monitoring # name of the namespace
+#   labels:
+#     app: checkmk # name of your application
+# # .......................................
+# spec:
+#   replicas: 1 # Number of replicas
+#   serviceName: checkmk
+#   selector:
+#     matchLabels:
+#       app: checkmk # name of your application
+#   template:
+#     metadata:
+#       labels:
+#         app: checkmk # name of your application
+#     spec:
+#       containers:
+#         - name: checkmk # name of the container
+#           image: checkmk/check-mk-free:2.1.0-latest # the image you want to run
+#           resources:
+#             limits:
+#               memory: 1Gi
+#               cpu: "2"
+#             requests:
+#               memory: 256Mi
+#               cpu: "0.2"
+#           env:
+#             - name: PORT
+#               value: "5000"
+#           ports:
+#             - name: http
+#               containerPort: 5000 # the port that your application uses
+#               protocol: TCP
+#           # readinessProbe:
+#           #   httpGet:
+#           #     path: /
+#           #     port: 5000
+#           #     scheme: HTTP
+#           #   initialDelaySeconds: 5
+#           # livenessProbe:
+#           #   httpGet:
+#           #     path: /
+#           #     port: 5000
+#           #   timeoutSeconds: 2
+#           #   initialDelaySeconds: 15
+#           volumeMounts:
+#             # - name: localtime
+#             #   mountPath: /etc/localtime
+#             # - name: tmpfs
+#             #   mountPath: /opt/omd/sites/cmk/tmp
+#             - name: data
+#               mountPath: /omd/sites
+#   volumeClaimTemplates:
+#     # - name: localtime
+#     #   hostPath:
+#     #     path: /etc/localtime
+#     #     type: File
+#     # - name: tmpfs
+#     #   emptyDir:
+#     #     medium: Memory
+#     #     sizeLimit: 64Mi
+#     - metadata:
+#         name: data
+#       spec:
+#         accessModes: ["ReadWriteOnce"]
+#         volumeMode: Filesystem
+#         resources:
+#           requests:
+#             storage: 1Gi
