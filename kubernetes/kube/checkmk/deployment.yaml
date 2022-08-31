@@ -19,7 +19,7 @@ spec:
       labels:
         app: checkmk # name of your application
     spec:
-      serviceAccount: checkmk
+      serviceAccount: checkmk-account
       securityContext: {}
       containers:
         - name: checkmk # name of the container

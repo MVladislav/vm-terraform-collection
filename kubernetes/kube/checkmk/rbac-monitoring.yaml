@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: checkmk
+  name: checkmk-account
   namespace: checkmk-n
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -69,5 +69,5 @@ roleRef:
   name: checkmk
 subjects:
   - kind: ServiceAccount
-    name: checkmk
+    name: checkmk-account
     namespace: checkmk-n
