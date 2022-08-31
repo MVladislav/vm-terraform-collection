@@ -37,7 +37,7 @@ spec:
             - name: CMK_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: checkmk
+                  name: checkmk-credential
                   key: password
             - name: CMK_SITE_ID
               valueFrom:
