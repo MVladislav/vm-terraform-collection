@@ -6,7 +6,7 @@ metadata:
 # ------------------------------------------------------------------------------
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: <APP_NAME> # name of the deployment
   namespace: <NAMESPACE> # name of the namespace
@@ -15,6 +15,7 @@ metadata:
 # .......................................
 spec:
   replicas: 1 # Number of replicas
+  serviceName: <APP_NAME>
   selector:
     matchLabels:
       app: <APP_NAME> # name of your application
@@ -24,33 +25,46 @@ spec:
         app: <APP_NAME> # name of your application
     spec:
       containers:
-        - name: nginx # name of the container
-          image: nginx:latest # the image you want to run
-          # resources:
-          #   limits:
-          #     memory: 512Mi
-          #     cpu: "1"
-          #   requests:
-          #     memory: 256Mi
-          #     cpu: "0.2"
+        - name: <APP_NAME> # name of the container
+          image: <SOURCE>:<VERSION> # the image you want to run
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+          env:
+            - name: PORT
+              value: "8080"
           ports:
             - name: http
               containerPort: 8080 # the port that your application uses
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /
               port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
           livenessProbe:
             httpGet:
               path: /
               port: 8080
-          # volumeMounts:
-          #   - mountPath: /var/www/html # the path that your application uses
-          #     name: vol0 # name of the volume
-      # volumes:
-      #   - name: vol0 # name of the volume
-      #     persistentVolumeClaim:
-      #       claimName: pvc0 # name of the persistent volume claim
+            timeoutSeconds: 2
+            initialDelaySeconds: 15
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        volumeMode: Filesystem
+        resources:
+          requests:
+            storage: 1Gi
 # ------------------------------------------------------------------------------
 ---
 apiVersion: v1
@@ -76,10 +90,15 @@ kind: Ingress
 metadata:
   name: <APP_NAME>
   namespace: <NAMESPACE>
+  annotations:
+    cert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: ""
 # .......................................
 spec:
   rules:
-    - host: "TODO.home.local"
+    - host: <APP_NAME>.home.local
       http:
         paths:
           - path: /
@@ -88,5 +107,9 @@ spec:
               service:
                 name: <APP_NAME> # the name of the service
                 port:
-                  number: 8080 # service port-number
+                  number: 3001 # service port-number
+  tls:
+    - hosts:
+        - <APP_NAME>.home.local
+      secretName: <APP_NAME>.home.local
 # ------------------------------------------------------------------------------
