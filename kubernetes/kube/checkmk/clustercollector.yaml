@@ -52,6 +52,7 @@ spec:
       labels:
         app: cluster-collector
     spec:
+      serviceAccountName: cluster-collector
       containers:
         - name: cluster-collector
           # You can find available images on
@@ -109,7 +110,6 @@ spec:
             runAsGroup: 10001
             runAsNonRoot: true
             runAsUser: 10001
-      serviceAccountName: cluster-collector
       volumes:
         - name: tmp
           emptyDir:
