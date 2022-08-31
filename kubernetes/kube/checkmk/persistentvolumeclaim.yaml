@@ -9,5 +9,3 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  # Please adjust to your system
-  storageClassName: fast
