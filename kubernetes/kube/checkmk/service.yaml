@@ -8,7 +8,7 @@ metadata:
 spec:
   selector:
     app: checkmk
-  type: NodePort
+  type: ClusterIP
   sessionAffinity: None
   ports:
     - name: http

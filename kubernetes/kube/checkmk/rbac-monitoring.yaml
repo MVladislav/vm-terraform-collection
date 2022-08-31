@@ -5,6 +5,7 @@ kind: ServiceAccount
 metadata:
   name: checkmk-account
   namespace: checkmk-n
+automountServiceAccountToken: false
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
