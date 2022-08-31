@@ -15,3 +15,18 @@ spec:
       port: 5000
       targetPort: 5000
       protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cluster-collector-nodeport
+  namespace: checkmk-n
+spec:
+  type: ClusterIP
+  selector:
+    app: cluster-collector
+  ports:
+    - name: cluster-collector
+      port: 30035
+      targetPort: 10050
+      protocol: TCP
