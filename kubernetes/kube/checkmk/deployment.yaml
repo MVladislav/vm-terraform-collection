@@ -48,6 +48,9 @@ spec:
             - name: http
               containerPort: 5000 # the port that your application uses
               protocol: TCP
+            - name: api
+              containerPort: 10050
+              protocol: TCP
           readinessProbe:
             httpGet:
               path: /
