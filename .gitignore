@@ -17,3 +17,6 @@
 !__templates/**
 !files/
 !files/**
+
+!kubernetes/
+!kubernetes/**
