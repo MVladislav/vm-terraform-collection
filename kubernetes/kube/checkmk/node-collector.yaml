@@ -141,7 +141,7 @@ spec:
             runAsUser: 10001
         # You can find available images on
         # https://hub.docker.com/r/checkmk/cadvisor-patched/tags
-        - image: checkmk/cadvisor-patched:main_<YYYY.MM.DD>
+        - image: checkmk/cadvisor-patched:main_2022.08.31
           imagePullPolicy: Always
           name: cadvisor
           command:
