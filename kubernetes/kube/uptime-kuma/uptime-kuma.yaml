@@ -27,6 +27,13 @@ spec:
       containers:
         - name: uptime-kuma # name of the container
           image: louislam/uptime-kuma:1.11.4 # the image you want to run
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
           env:
             - name: UPTIME_KUMA_PORT
               value: "3001"
@@ -82,10 +89,10 @@ metadata:
   name: uptime-kuma
   namespace: monitoring
   annotations:
-    scert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
-    straefik.ingress.kubernetes.io/router.entrypoints: websecure
-    straefik.ingress.kubernetes.io/router.tls: true
-    straefik.ingress.kubernetes.io/router.middlewares: ""
+    cert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: ""
 # .......................................
 spec:
   rules:
