@@ -27,9 +27,9 @@ spec:
           # image: checkmk/check-mk-raw:2.1.0p11 # the image you want to run
           imagePullPolicy: IfNotPresent
           resources:
-            # limits:
-            #   memory: 1Gi
-            #   cpu: "2"
+            limits:
+              memory: 1Gi
+              cpu: "2"
             requests:
               memory: 500Mi
               cpu: "1"
@@ -48,18 +48,18 @@ spec:
             - name: http
               containerPort: 5000 # the port that your application uses
               protocol: TCP
-          # readinessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 5000
-          #     scheme: HTTP
-          #   initialDelaySeconds: 5
-          # livenessProbe:
-          #   httpGet:
-          #     path: /
-          #     port: 5000
-          #   timeoutSeconds: 2
-          #   initialDelaySeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5000
+              scheme: HTTP
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 5000
+            timeoutSeconds: 2
+            initialDelaySeconds: 15
           volumeMounts:
             - name: localtime
               mountPath: /etc/localtime
