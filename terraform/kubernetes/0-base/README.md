@@ -11,6 +11,7 @@
     - [create self-signed-cert](#create-self-signed-cert)
     - [create traefik conf files](#create-traefik-conf-files)
   - [argo-cd](#argo-cd)
+    - [change admin password](#change-admin-password)
   - [References](#references)
 
 ---
@@ -62,6 +63,17 @@ when argo-cd is deployed, you can get the password for `admin` user, like follow
 
 ```sh
 $kubectl -n argo-cd get secrets argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+### change admin password
+
+```sh
+$python3 -c "import bcrypt; print(bcrypt.hashpw(b'YOUR-PASSWORD-HERE', bcrypt.gensalt()).decode())"
+$kubectl -n argocd patch secret argocd-secret \
+  -p '{"stringData": {
+    "admin.password": "$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa",
+    "admin.passwordMtime": "'$(date +%FT%T%Z)'"
+  }}'
 ```
 
 ---
