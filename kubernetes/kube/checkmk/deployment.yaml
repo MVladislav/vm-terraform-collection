@@ -32,7 +32,7 @@ spec:
               cpu: "3000m"
             requests:
               memory: 2Gi
-              cpu: 2000m"
+              cpu: "2000m"
           env:
             - name: CMK_PASSWORD
               valueFrom:
