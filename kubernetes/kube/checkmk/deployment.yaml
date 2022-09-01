@@ -27,12 +27,12 @@ spec:
           # image: checkmk/check-mk-raw:2.1.0p11 # the image you want to run
           imagePullPolicy: IfNotPresent
           resources:
-            # limits:
-            #   memory: 2Gi
-            #   cpu: "2"
+            limits:
+              memory: 4Gi
+              cpu: "3000m"
             requests:
-              memory: 500Mi
-              cpu: "1"
+              memory: 2Gi
+              cpu: 2000m"
           env:
             - name: CMK_PASSWORD
               valueFrom:
