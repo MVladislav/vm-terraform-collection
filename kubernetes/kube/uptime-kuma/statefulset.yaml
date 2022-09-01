@@ -1,15 +1,9 @@
 ---
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: monitoring
-# ------------------------------------------------------------------------------
----
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: uptime-kuma # name of the deployment
-  namespace: monitoring # name of the namespace
+  namespace: uptime-kuma # name of the namespace
   labels:
     app: uptime-kuma # name of your application
 # .......................................
@@ -67,52 +61,3 @@ spec:
         resources:
           requests:
             storage: 1Gi
-# ------------------------------------------------------------------------------
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: uptime-kuma
-  namespace: monitoring
-# .......................................
-spec:
-  selector:
-    app: uptime-kuma
-  type: ClusterIP
-  # ClusterIP means this service can be accessed by any pod in the cluster
-  ports:
-    - name: http
-      port: 3001
-      targetPort: 3001
-      protocol: TCP
-# ------------------------------------------------------------------------------
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: uptime-kuma
-  namespace: monitoring
-  annotations:
-    cert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure
-    traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: ""
-# .......................................
-spec:
-  ingressClassName: traefik
-  rules:
-    - host: kuma.home.local
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: uptime-kuma # the name of the service
-                port:
-                  number: 3001 # service port-number
-  tls:
-    - hosts:
-        - kuma.home.local
-      secretName: kuma.home.local
-# ------------------------------------------------------------------------------
