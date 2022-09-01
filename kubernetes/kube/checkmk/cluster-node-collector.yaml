@@ -182,14 +182,7 @@ spec:
       # TODO:
       # https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#service-account-token-volume-projection
       terminationGracePeriodSeconds: 30
-      # HTTPS: Uncomment volume checkmk-ca-cert for HTTPS
       volumes:
-        # - name: checkmk-ca-cert
-        #   secret:
-        #     secretName: cluster-collector-secret
-        #     items:
-        #       - key: checkmk-ca-cert
-        #         path: checkmk-ca-cert.pem
         - name: var-run
           hostPath:
             path: /var/run
