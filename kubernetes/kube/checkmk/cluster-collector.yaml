@@ -1,116 +1,116 @@
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    app: cluster-collector
-  name: cluster-collector
-  namespace: checkmk-n
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: checkmk-cluster-collector
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: checkmk-collectors-podsecurity
-subjects:
-  - kind: ServiceAccount
-    name: cluster-collector
-    namespace: checkmk-n
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: checkmk-token-review
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: system:auth-delegator
-subjects:
-  - kind: ServiceAccount
-    name: cluster-collector
-    namespace: checkmk-n
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  annotations:
-    seccomp.security.alpha.kubernetes.io/pod: runtime/default
-  name: cluster-collector
-  namespace: checkmk-n
-  labels:
-    app: cluster-collector
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: cluster-collector
-  template:
-    metadata:
-      labels:
-        app: cluster-collector
-    spec:
-      serviceAccountName: cluster-collector
-      containers:
-        - name: cluster-collector
-          # You can find available images on
-          # https://hub.docker.com/r/checkmk/kubernetes-collector/tags
-          image: checkmk/kubernetes-collector:main_2022.08.31
-          imagePullPolicy: Always
-          env:
-            - name: NODE_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-          # HTTPS: Uncomment volumeMounts for cluster-collector-key and
-          # cluster-collector-cert HTTPS
-          volumeMounts:
-            # gunicorn needs a writeable /tmp and runs best with ram backed /tmp
-            # https://docs.gunicorn.org/en/latest/faq.html#blocking-os-fchmod
-            - name: tmp
-              mountPath: /tmp
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: api
-              httpHeaders:
-                - name: status
-                  value: available
-              # HTTP/HTTPS: Change scheme accordingly
-              scheme: HTTP
-            initialDelaySeconds: 3
-            periodSeconds: 10
-          command:
-            - "/usr/local/bin/checkmk-cluster-collector"
-          # HTTPS: Uncomment ssl-keyfile, ssl-certfile, secure-protocol in args
-          args:
-            - "--host=0.0.0.0"
-            - "--reader-whitelist=checkmk-monitoring:checkmk"
-            - "--writer-whitelist=checkmk-monitoring:node-collector-container-metrics,checkmk-monitoring:node-collector-machine-sections"
-          ports:
-            - containerPort: 10050
-              name: api
-              protocol: TCP
-          resources:
-            limits:
-              cpu: 300m
-              memory: 2000Mi
-            requests:
-              cpu: 150m
-              memory: 200Mi
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            privileged: false
-            readOnlyRootFilesystem: true
-            runAsGroup: 10001
-            runAsNonRoot: true
-            runAsUser: 10001
-      volumes:
-        - name: tmp
-          emptyDir:
-            medium: Memory
+# ---
+# apiVersion: v1
+# kind: ServiceAccount
+# metadata:
+#   labels:
+#     app: cluster-collector
+#   name: cluster-collector
+#   namespace: checkmk-n
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: checkmk-cluster-collector
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: checkmk-collectors-podsecurity
+# subjects:
+#   - kind: ServiceAccount
+#     name: cluster-collector
+#     namespace: checkmk-n
+# ---
+# apiVersion: rbac.authorization.k8s.io/v1
+# kind: ClusterRoleBinding
+# metadata:
+#   name: checkmk-token-review
+# roleRef:
+#   apiGroup: rbac.authorization.k8s.io
+#   kind: ClusterRole
+#   name: system:auth-delegator
+# subjects:
+#   - kind: ServiceAccount
+#     name: cluster-collector
+#     namespace: checkmk-n
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   annotations:
+#     seccomp.security.alpha.kubernetes.io/pod: runtime/default
+#   name: cluster-collector
+#   namespace: checkmk-n
+#   labels:
+#     app: cluster-collector
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: cluster-collector
+#   template:
+#     metadata:
+#       labels:
+#         app: cluster-collector
+#     spec:
+#       serviceAccountName: cluster-collector
+#       containers:
+#         - name: cluster-collector
+#           # You can find available images on
+#           # https://hub.docker.com/r/checkmk/kubernetes-collector/tags
+#           image: checkmk/kubernetes-collector:main_2022.08.31
+#           imagePullPolicy: Always
+#           env:
+#             - name: NODE_NAME
+#               valueFrom:
+#                 fieldRef:
+#                   fieldPath: spec.nodeName
+#           # HTTPS: Uncomment volumeMounts for cluster-collector-key and
+#           # cluster-collector-cert HTTPS
+#           volumeMounts:
+#             # gunicorn needs a writeable /tmp and runs best with ram backed /tmp
+#             # https://docs.gunicorn.org/en/latest/faq.html#blocking-os-fchmod
+#             - name: tmp
+#               mountPath: /tmp
+#           livenessProbe:
+#             httpGet:
+#               path: /health
+#               port: api
+#               httpHeaders:
+#                 - name: status
+#                   value: available
+#               # HTTP/HTTPS: Change scheme accordingly
+#               scheme: HTTP
+#             initialDelaySeconds: 3
+#             periodSeconds: 10
+#           command:
+#             - "/usr/local/bin/checkmk-cluster-collector"
+#           # HTTPS: Uncomment ssl-keyfile, ssl-certfile, secure-protocol in args
+#           args:
+#             - "--host=0.0.0.0"
+#             - "--reader-whitelist=checkmk-monitoring:checkmk"
+#             - "--writer-whitelist=checkmk-monitoring:node-collector-container-metrics,checkmk-monitoring:node-collector-machine-sections"
+#           ports:
+#             - containerPort: 10050
+#               name: api
+#               protocol: TCP
+#           resources:
+#             limits:
+#               cpu: 300m
+#               memory: 2000Mi
+#             requests:
+#               cpu: 150m
+#               memory: 200Mi
+#           securityContext:
+#             allowPrivilegeEscalation: false
+#             capabilities:
+#               drop:
+#                 - ALL
+#             privileged: false
+#             readOnlyRootFilesystem: true
+#             runAsGroup: 10001
+#             runAsNonRoot: true
+#             runAsUser: 10001
+#       volumes:
+#         - name: tmp
+#           emptyDir:
+#             medium: Memory
