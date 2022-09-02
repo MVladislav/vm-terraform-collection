@@ -26,4 +26,4 @@ spec:
   tls:
     - hosts:
         - checkmk.home.local
-      secretName: checkmk-home-local
+      secretName: checkmk.home.local
