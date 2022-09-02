@@ -76,7 +76,6 @@ resource "helm_release" "argo_cd" {
   # LOAD from values-file
   values = [
     templatefile("values/argo-cd.yaml", {
-
     })
   ]
 

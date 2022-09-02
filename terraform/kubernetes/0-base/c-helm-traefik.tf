@@ -14,7 +14,7 @@ resource "helm_release" "traefik" {
 
   depends_on = [
     kubernetes_namespace.traefik,
-    kubernetes_config_map_v1.traefik_config
+    # kubernetes_config_map_v1.traefik_config
   ]
 
   name      = "traefik"
@@ -24,11 +24,11 @@ resource "helm_release" "traefik" {
   chart      = "traefik"
   version    = var.version_traefik
 
-  # # DEFAULT setup
-  # set {
-  #   name  = "deployment.replicas"
-  #   value = 1
-  # }
+  # DEFAULT setup
+  set {
+    name  = "deployment.replicas"
+    value = 2
+  }
 
   # set traefik as default ingress controller
   set {
@@ -66,9 +66,6 @@ resource "helm_release" "traefik" {
   # LOAD from values-file
   values = [
     templatefile("values/traefik.yaml", {
-      "kube_cert_cluster_issuer"     = var.kube_cert_cluster_issuer
-      "traefik_elastic_server_url"   = "http://apm-server:8200"
-      "traefik_elastic_secret_token" = ""
     })
   ]
 

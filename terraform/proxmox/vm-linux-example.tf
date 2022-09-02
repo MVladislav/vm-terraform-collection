@@ -26,7 +26,7 @@ resource "proxmox_vm_qemu" "ubuntu_vm_clone" {
 
   scsihw = "virtio-scsi-pci"
   disk {
-    storage  = "${var.proxmox_vm_storage_name}"
+    storage  = var.proxmox_vm_storage_name
     type     = "scsi"
     size     = "${var.proxmox_vm_size_gb}G"
     ssd      = 1

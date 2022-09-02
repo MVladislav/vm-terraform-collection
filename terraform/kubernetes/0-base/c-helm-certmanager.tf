@@ -21,11 +21,11 @@ resource "helm_release" "cert_manager" {
   chart      = "cert-manager"
   version    = var.version_cert_manager
 
-  # # DEFAULT setup
-  # set {
-  #   name  = "replicaCount"
-  #   value = 1
-  # }
+  # DEFAULT setup
+  set {
+    name  = "replicaCount"
+    value = 2
+  }
 
   # install kubernetes CRDs (CRD -> Customer Role Definitions)
   set {

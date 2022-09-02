@@ -19,4 +19,6 @@
 !terraform/**
 
 !kubernetes/
-!kubernetes/**
+kubernetes/*
+!kubernetes/kube/
+!kubernetes/kube/**

@@ -71,5 +71,5 @@ metrics:
 tracing:
   {}
   # elastic:
-  #   serverURL: "${traefik_elastic_server_url}"
-  #   secretToken: "${traefik_elastic_secret_token}"
+  #   serverURL: "$${traefik_elastic_server_url}"
+  #   secretToken: $${traefik_elastic_secret_token}"
