@@ -69,7 +69,7 @@ $kubectl -n argo-cd get secrets argocd-initial-admin-secret -o jsonpath="{.data.
 
 ```sh
 $python3 -c "import bcrypt; print(bcrypt.hashpw(b'YOUR-PASSWORD-HERE', bcrypt.gensalt()).decode())"
-$kubectl -n argocd patch secret argocd-secret \
+$kubectl -n argo-cd patch secret argocd-secret \
   -p '{"stringData": {
     "admin.password": "$2a$10$rRyBsGSHK6.uc8fntPwVIuLVHgsAhAX7TcdrqW/RADU0uh7CaChLa",
     "admin.passwordMtime": "'$(date +%FT%T%Z)'"

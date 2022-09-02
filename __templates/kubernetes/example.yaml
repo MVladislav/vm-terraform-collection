@@ -111,5 +111,5 @@ spec:
   tls:
     - hosts:
         - <APP_NAME>.home.local
-      secretName: <APP_NAME>.home.local
+      secretName: <APP_NAME>-home-local
 # ------------------------------------------------------------------------------

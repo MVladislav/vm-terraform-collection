@@ -21,12 +21,6 @@ resource "helm_release" "argo_cd" {
   chart      = "argo-cd"
   version    = var.version_argo_cd
 
-  # # DEFAULT setup
-  # set {
-  #   name  = "replicaCount"
-  #   value = 2
-  # }
-
   # INGRESS setup
   set {
     name  = "server.ingress.enabled"
@@ -73,11 +67,27 @@ resource "helm_release" "argo_cd" {
     value = "--insecure"
   }
 
-  # LOAD from values-file
-  values = [
-    templatefile("values/argo-cd.yaml", {
-    })
-  ]
+  # HA
+  set {
+    name  = "redis-ha.enabled"
+    value = "true"
+  }
+  set {
+    name  = "controller.replicas"
+    value = "1"
+  }
+  set {
+    name  = "server.replicas"
+    value = "2"
+  }
+  set {
+    name  = "repoServer.replicas"
+    value = "2"
+  }
+  set {
+    name  = "applicationSet.replicas"
+    value = "2"
+  }
 
 }
 

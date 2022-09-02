@@ -14,7 +14,8 @@ resource "proxmox_vm_qemu" "ubuntu_vm_clone" {
   onboot   = false
   oncreate = true
 
-  hotplug = "network,disk,usb,cpu,memory"
+  # not activate cpu,memory - this will break the vm
+  hotplug = "network,disk,usb"
 
   cpu     = var.proxmox_vm_cpu
   cores   = var.proxmox_vm_cores

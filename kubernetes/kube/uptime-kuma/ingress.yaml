@@ -5,7 +5,7 @@ metadata:
   name: uptime-kuma
   namespace: uptime-kuma
   annotations:
-    cert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
+    cert-manager.io/cluster-issuer: cert-manager-cert-cluster-issuer
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.middlewares: ""
@@ -26,4 +26,4 @@ spec:
   tls:
     - hosts:
         - kuma.home.local
-      secretName: kuma.home.local
+      secretName: kuma-home-local
