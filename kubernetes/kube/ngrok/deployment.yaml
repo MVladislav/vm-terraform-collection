@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ngrok
+  namespace: ngrok
+# .......................................
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ngrok
+  template:
+    metadata:
+      labels:
+        app: ngrok
+    spec:
+      containers:
+        - name: ngrok
+          image: ngrok/ngrok:3
+          command: ["ngrok"]
+          args: ["start", "--all", "--config", "/tmp/config.yaml"]
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+          ports:
+            - name: http
+              containerPort: 4040
+              protocol: TCP
+          env:
+            - name: AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: ngrok
+                  key: AUTH_TOKEN
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 4040
+              scheme: HTTP
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 4040
+            timeoutSeconds: 2
+            initialDelaySeconds: 15
+          volumeMounts:
+            - name: config
+              mountPath: /tmp/
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: ngrok
+            items:
+              - key: config.yaml
+                path: config.yaml

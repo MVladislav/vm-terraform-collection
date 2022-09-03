@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ngrok
+  namespace: ngrok
+data:
+  config.yaml: |
+    authtoken: ${AUTH_TOKEN}
+
+    version: 2
+
+    region: eu
+    console_ui: "iftty"
+    inspect_db_size: 0
+    log_level: info
+    log_format: term
+    log: false # /var/log/ngrok.log
+    update: false
+    update_channel: stable
+    web_addr: 0.0.0.0:4040
+
+    tunnels:
+      minecraft:
+        proto: tcp
+        addr: minecraft-minecraft.minecraft:30003

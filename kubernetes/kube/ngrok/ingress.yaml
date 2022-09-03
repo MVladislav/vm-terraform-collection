@@ -1,0 +1,28 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ngrok
+  namespace: ngrok
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cert-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: ""
+# .......................................
+spec:
+  rules:
+    - host: ngrok.home.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ngrok # the name of the service
+                port:
+                  number: 4040 # service port-number
+  tls:
+    - hosts:
+        - ngrok.home.local
+      secretName: ngrok-home-local
