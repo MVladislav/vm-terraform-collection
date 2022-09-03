@@ -1,0 +1,123 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm-kube.fullname" . }}
+  labels:
+    app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+    {{- include "helm-kube.labels" . | nindent 4 }}
+# ..............................................................................
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "helm-kube.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "helm-kube.labels" . | nindent 8 }}
+        app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+    spec:
+      serviceAccountName: {{ template "helm-kube.serviceAccountName" . }}
+
+{{- with .Values.securityContext }}
+      securityContext:
+{{ toYaml . | nindent 8 }}
+{{- end }}
+# ..............................................................................
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+{{- with .Values.extraCommands }}
+        command:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.extraArgs }}
+        args:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.extraEnv }}
+        env:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.extraPorts }}
+        ports:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.extraVolumeMounts }}
+        volumeMounts:
+{{ toYaml . | nindent 8 }}
+{{- end }}
+
+#         livenessProbe:
+#           httpGet:
+# {{- if .Values.protocolHttp }}
+#             scheme: HTTP
+#             path: /
+#             port: 9090
+# {{- else }}
+#             scheme: HTTPS
+#             path: /
+#             port: 8443
+# {{- end }}
+#           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+#           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+
+{{- with .Values.resources }}
+        resources:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.containerSecurityContext }}
+        securityContext:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+
+
+{{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+{{- range . }}
+        - name: {{ . }}
+{{- end }}
+{{- end }}
+
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.priorityClassName }}
+      priorityClassName: "{{ . }}"
+{{- end }}
+
+      volumes:
+      - name: kubernetes-dashboard-certs
+        secret:
+          secretName: {{ template "kubernetes-dashboard.fullname" . }}-certs
+      - name: tmp-volume
+        emptyDir: {}
+
+{{- with .Values.extraVolumes }}
+{{ toYaml . | nindent 6 }}
+{{- end }}
+
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | nindent 8 }}
+{{- end }}
