@@ -20,5 +20,7 @@
 
 !kubernetes/
 kubernetes/*
+!kubernetes/helm/
+!kubernetes/helm/**
 !kubernetes/kube/
 !kubernetes/kube/**

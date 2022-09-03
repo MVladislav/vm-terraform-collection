@@ -15,7 +15,7 @@ metadata:
 # .......................................
 spec:
   replicas: 1 # Number of replicas
-  serviceName: <APP_NAME>
+  # serviceName: <APP_NAME>
   selector:
     matchLabels:
       app: <APP_NAME> # name of your application
@@ -67,6 +67,60 @@ spec:
             storage: 1Gi
 # ------------------------------------------------------------------------------
 ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <APP_NAME> # name of the deployment
+  namespace: <NAMESPACE> # name of the namespace
+  labels:
+    app: <APP_NAME> # name of your application
+# .......................................
+spec:
+  replicas: 1 # Number of replicas
+  # serviceName: <APP_NAME>
+  selector:
+    matchLabels:
+      app: <APP_NAME> # name of your application
+  template:
+    metadata:
+      labels:
+        app: <APP_NAME> # name of your application
+    spec:
+      containers:
+        - name: <APP_NAME> # name of the container
+          image: <SOURCE>:<VERSION> # the image you want to run
+          resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"
+          env:
+            - name: PORT
+              value: "8080"
+          ports:
+            - name: http
+              containerPort: 8080 # the port that your application uses
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            timeoutSeconds: 2
+            initialDelaySeconds: 15
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+  # volumes: ...
+# ------------------------------------------------------------------------------
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -91,7 +145,7 @@ metadata:
   name: <APP_NAME>
   namespace: <NAMESPACE>
   annotations:
-    cert-manager.io/cluster-issuer: vm-traefik-cluster-issuer
+    cert-manager.io/cluster-issuer: cert-manager-cert-cluster-issuer
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
     traefik.ingress.kubernetes.io/router.middlewares: ""
@@ -107,7 +161,7 @@ spec:
               service:
                 name: <APP_NAME> # the name of the service
                 port:
-                  number: 3001 # service port-number
+                  number: 8080 # service port-number
   tls:
     - hosts:
         - <APP_NAME>.home.local
