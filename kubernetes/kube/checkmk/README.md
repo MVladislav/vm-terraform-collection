@@ -82,6 +82,10 @@ add as api-server the internal hostname: `https://kubernetes.default.svc`\
 and for enrich the data, user also the internal service-ip from **checkmk-monitoring-cluster-collector**
 with the default port `8080`.
 
+```sh
+$kubectl get service -n checkmk-n | grep cluster
+```
+
 ![kubernetes](__docs/2022-09-01-20-45-38.png)
 
 ---
