@@ -1,0 +1,62 @@
+{{ if .Values.ingress.enabled -}}
+{{- $serviceName := include "helm-kube.fullname" . -}}
+{{- $servicePort := .Values.service.externalPort -}}
+{{- $paths := .Values.ingress.paths -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "helm-kube.fullname" . }}
+  labels:
+    {{- include "helm-kube.labels" . | nindent 4 }}
+  annotations:
+    {{- end }}
+    {{- with .Values.ingress.annotations }}
+    {{ toYaml . | nindent 4 }}
+    {{- end }}
+# ..............................................................................
+spec:
+  {{- with .Values.ingress.className }}
+  ingressClassName: {{ . | quote }}
+  {{- end }}
+  rules:
+  {{- if .Values.ingress.hosts }}
+  {{- range $host := .Values.ingress.hosts }}
+    - host: {{ $host }}
+      http:
+        paths:
+  {{- if len ($.Values.ingress.customPaths) }}
+  {{- "\n" }}{{ tpl (toYaml $.Values.ingress.customPaths | nindent 10) $ }}
+  {{- else }}
+  {{- range $p := $paths }}
+          - path: {{ $p }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+  {{- end -}}
+  {{- end -}}
+  {{- end -}}
+  {{- else }}
+    - http:
+        paths:
+  {{- if len ($.Values.ingress.customPaths) }}
+  {{- "\n" }}{{ tpl (toYaml $.Values.ingress.customPaths | nindent 10) $ }}
+  {{- else }}
+  {{- range $p := $paths }}
+          - path: {{ $p }}
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: {{ $serviceName }}
+                port:
+                  number: {{ $servicePort }}
+  {{- end -}}
+  {{- end -}}
+  {{- end -}}
+  {{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end -}}
+{{- end -}}
