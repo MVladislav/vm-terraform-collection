@@ -50,7 +50,7 @@ secretCredential:
 secretToken:
   enabled: true
   annotations:
-    kubernetes.io/service-account.name: template-service-account
+    kubernetes.io/service-account.name: checkmk-account
   type: kubernetes.io/service-account-token
 
 ## CONFIG_MAP
@@ -65,7 +65,7 @@ configMap:
 ## _____________________________________________________________________________
 serviceAccount:
   create: true
-  name: template-service-account
+  name: checkmk-account
   automountServiceAccountToken: false
   clusterRole:
     rules:
