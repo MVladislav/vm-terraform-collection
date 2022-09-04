@@ -45,3 +45,11 @@ jobs:
           cliArguments: "--only-k8s-files"
           isHelmChart: true
           # helmArguments: "--values values.yaml"
+
+      - name: Run Datree Policy Check - checkmk
+        uses: datreeio/action-datree@main
+        with:
+          path: "kubernetes/helm/checkmk"
+          cliArguments: "--only-k8s-files"
+          isHelmChart: true
+          # helmArguments: "--values values.yaml"
