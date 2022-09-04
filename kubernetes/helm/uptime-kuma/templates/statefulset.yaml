@@ -9,6 +9,7 @@ metadata:
 # ..............................................................................
 spec:
   replicas: {{ .Values.statefulSet.replicaCount }}
+  serviceName: {{ include "helm-kube.fullname" . }}
   # strategy:
   #   rollingUpdate:
   #     maxSurge: 0
