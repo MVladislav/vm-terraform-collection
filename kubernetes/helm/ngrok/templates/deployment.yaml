@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,53 +38,48 @@ spec:
 
 {{- with .Values.extraCommands }}
         command:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraArgs }}
         args:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraEnv }}
         env:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraPorts }}
         ports:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraVolumeMounts }}
         volumeMounts:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
-#         livenessProbe:
-#           httpGet:
-# {{- if .Values.protocolHttp }}
-#             scheme: HTTP
-#             path: /
-#             port: 9090
-# {{- else }}
-#             scheme: HTTPS
-#             path: /
-#             port: 8443
-# {{- end }}
-#           initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
-#           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+{{- with .Values.readinessProbe }}
+        readinessProbe:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.livenessProbe }}
+        livenessProbe:
+{{- toYaml . | nindent 10 }}
+{{- end }}
 
 {{- with .Values.resources }}
         resources:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.containerSecurityContext }}
         securityContext:
 {{ toYaml . | nindent 10 }}
 {{- end }}
-
 
 {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
@@ -94,30 +90,24 @@ spec:
 
 {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}
 
 {{- with .Values.priorityClassName }}
       priorityClassName: "{{ . }}"
 {{- end }}
 
-      volumes:
-      - name: kubernetes-dashboard-certs
-        secret:
-          secretName: {{ template "kubernetes-dashboard.fullname" . }}-certs
-      - name: tmp-volume
-        emptyDir: {}
-
 {{- with .Values.extraVolumes }}
-{{ toYaml . | nindent 6 }}
+      volumes:
+{{- toYaml . | nindent 8 }}
 {{- end }}
 
 {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}
 
 {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}

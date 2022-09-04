@@ -50,3 +50,14 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
+
+{{/*
+Name of the service account to use
+*/}}
+{{- define "helm-kube.serviceAccountName" -}}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "helm-kube.fullname" .) .Values.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.name }}
+{{- end -}}
+{{- end -}}

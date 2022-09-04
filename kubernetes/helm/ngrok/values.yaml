@@ -1,3 +1,4 @@
+---
 ## BASE
 ## _____________________________________________________________________________
 nameOverride: ""
@@ -48,13 +49,38 @@ ingress:
     - secretName: ngrok-home-local
       hosts:
         - ngrok.home.local
+  customPaths: []
 
 ## SECRET
 ## _____________________________________________________________________________
 secret:
+  enabled: true
   type: Opaque
   stringData: null
   data: null
+
+## SERVICE_ACCOUNT
+## _____________________________________________________________________________
+serviceAccount:
+  create: false
+  name:
+
+## PROBES
+## _____________________________________________________________________________
+readinessProbe:
+  httpGet:
+    path: /
+    port: 4040
+    scheme: HTTP
+  initialDelaySeconds: 5
+livenessProbe:
+  httpGet:
+    path: /
+    port: 4040
+  # Number of seconds to wait for probe response
+  timeoutSeconds: 30
+  # Number of seconds to wait before sending first probe
+  initialDelaySeconds: 30
 
 ## Additional container commands
 ## _____________________________________________________________________________
@@ -94,7 +120,7 @@ extraVolumeMounts:
 extraVolumes:
   - name: config
     secret:
-      secretName: ngrok
+      secretName: ngrok-ngrok
 
 ## Pod resource requests & limits
 ## _____________________________________________________________________________
