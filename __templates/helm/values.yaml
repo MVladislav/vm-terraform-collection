@@ -43,20 +43,45 @@ ingress:
   className: traefik
 
   paths:
-    - /
+    - "/"
   hosts:
     - <template>.home.local
   tls:
     - secretName: template-secret
       hosts:
         - <template>.home.local
+  customPaths: []
 
 ## SECRET
 ## _____________________________________________________________________________
 secret:
+  enabled: false
   type: Opaque
   stringData: null
   data: null
+
+## SERVICE_ACCOUNT
+## _____________________________________________________________________________
+serviceAccount:
+  create: false
+  name:
+
+## PROBES
+## _____________________________________________________________________________
+readinessProbe:
+  httpGet:
+    path: /
+    port: 4040
+    scheme: HTTP
+  initialDelaySeconds: 5
+livenessProbe:
+  httpGet:
+    path: /
+    port: 4040
+  # Number of seconds to wait for probe response
+  timeoutSeconds: 30
+  # Number of seconds to wait before sending first probe
+  initialDelaySeconds: 30
 
 ## Additional container commands
 ## _____________________________________________________________________________
