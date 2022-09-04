@@ -17,8 +17,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Run Datree Policy Check
+      - name: Run Datree Policy Check - Kube-Files
         uses: datreeio/action-datree@main
         with:
           path: "kubernetes/kube/**/*.yaml"
           cliArguments: "--only-k8s-files"
+
+      - name: Run Datree Policy Check - Helm-Files
+        uses: datreeio/action-datree@main
+        with:
+          path: "kubernetes/helm/**/*.yaml"
+          cliArguments: ""
+          isHelmChart: true
+          helmArguments: "--values values.yaml"
