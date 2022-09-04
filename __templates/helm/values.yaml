@@ -32,10 +32,10 @@ ingress:
     - "/"
   hosts:
     - <template>.home.local
-  tls:
-    - secretName: template-secret
-      hosts:
-        - <template>.home.local
+
+  tls: true
+  secretName: template-secret
+
   customPaths: []
 
 ## SECRET
@@ -123,11 +123,15 @@ persistentVolumeClaim:
     - ReadWriteOnce
   volumeMode: Filesystem
   storage: 1Gi
+  storageClass: ""
+  velero:
+    enabled: false
 
 ## DEPLOYMENT
 ## =============================================================================
 deployment:
   replicaCount: 2
+  updateStrategy: Recreate # RollingUpdate | Recreate
 
   ## IMAGE
   ## _____________________________________________________________________________
@@ -145,15 +149,22 @@ deployment:
       path: /
       port: 4040
       scheme: HTTP
-    initialDelaySeconds: 5
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
   livenessProbe:
     httpGet:
       path: /
       port: 4040
     # Number of seconds to wait for probe response
-    timeoutSeconds: 30
+    timeoutSeconds: 5
     # Number of seconds to wait before sending first probe
-    initialDelaySeconds: 30
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
 
   ## Additional container commands
   ## _____________________________________________________________________________
@@ -204,12 +215,13 @@ deployment:
   ## Pod resource requests & limits
   ## _____________________________________________________________________________
   resources:
+    enabled: true
     requests:
       cpu: 100m
       memory: 200Mi
     limits:
-      cpu: 2
-      memory: 200Mi
+      cpu: 1
+      memory: 1024Mi
 
   ## To disable set the following configuration to null:
   ## _____________________________________________________________________________

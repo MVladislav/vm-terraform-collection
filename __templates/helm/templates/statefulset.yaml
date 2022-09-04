@@ -10,11 +10,6 @@ metadata:
 spec:
   replicas: {{ .Values.statefulSet.replicaCount }}
   serviceName: {{ include "helm-kube.fullname" . }}
-  # strategy:
-  #   rollingUpdate:
-  #     maxSurge: 0
-  #     maxUnavailable: 1
-  #   type: RollingUpdate
   selector:
     matchLabels:
       {{- include "helm-kube.selectorLabels" . | nindent 6 }}
@@ -33,53 +28,56 @@ spec:
 # {{- end }}
 # ..............................................................................
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.statefulSet.image.repository }}:{{ .Values.statefulSet.image.tag }}"
-        imagePullPolicy: {{ .Values.statefulSet.image.pullPolicy }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.statefulSet.image.repository }}:{{ .Values.statefulSet.image.tag }}"
+          imagePullPolicy: {{ .Values.statefulSet.image.pullPolicy }}
 
 {{- with .Values.statefulSet.extraCommands }}
-        command:
-{{- toYaml . | nindent 10 }}
+          command:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.statefulSet.extraArgs }}
-        args:
-{{- toYaml . | nindent 10 }}
+          args:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.statefulSet.extraEnv }}
-        env:
-{{- toYaml . | nindent 10 }}
+          env:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.statefulSet.extraPorts }}
-        ports:
-{{- toYaml . | nindent 10 }}
+          ports:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.statefulSet.extraVolumeMounts }}
-        volumeMounts:
-{{- toYaml . | nindent 10 }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.statefulSet.readinessProbe }}
-        readinessProbe:
-{{- toYaml . | nindent 10 }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.statefulSet.livenessProbe }}
-        livenessProbe:
-{{- toYaml . | nindent 10 }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.statefulSet.resources }}
-        resources:
-{{- toYaml . | nindent 10 }}
+{{- if .Values.deployment.resources.enabled }}
+          resources:
+            requests:
+{{ toYaml .Values.deployment.resources.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.deployment.resources.limits | indent 14 }}
 {{- end }}
 
 {{- with .Values.statefulSet.containerSecurityContext }}
-        securityContext:
-{{ toYaml . | nindent 10 }}
+          securityContext:
+            {{ toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.statefulSet.image.pullSecrets }}
@@ -103,10 +101,31 @@ spec:
 {{- toYaml . | nindent 8 }}
 {{- end }}
 
-{{- with .Values.statefulSet.affinity }}
       affinity:
-{{- toYaml . | nindent 8 }}
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: {{ .Values.persistentVolumeClaim.enabled | ternary "91" "89" }}
+              preference:
+                matchExpressions:
+                  - key: application/state
+                    operator: In
+                    values:
+                      - {{ .Values.persistentVolumeClaim.enabled | ternary "stateful" "stateless" }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 90
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ template "helm-kube.name" . }}
+{{- with .Values.deployment.affinity }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
+
 
 {{- with .Values.statefulSet.extraVolumes }}
   volumeClaimTemplates:

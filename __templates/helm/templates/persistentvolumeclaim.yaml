@@ -17,4 +17,13 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistentVolumeClaim.storage }}
+
+{{- if .Values.persistentVolumeClaim.storageClass }}
+  {{- if ( eq "-" .Values.persistentVolumeClaim.storageClass ) }}
+  storageClassName: ''
+  {{- else }}
+  storageClassName: {{ .Values.persistentVolumeClaim.storageClass }}
+  {{- end }}
+{{- end }}
+
 {{- end }}
