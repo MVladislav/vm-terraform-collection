@@ -1,0 +1,114 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "helm-kube.fullname" . }}
+  labels:
+    app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+    {{- include "helm-kube.labels" . | nindent 4 }}
+# ..............................................................................
+spec:
+  replicas: {{ .Values.statefulSet.replicaCount }}
+  serviceName: {{ include "helm-kube.fullname" . }}
+  # strategy:
+  #   rollingUpdate:
+  #     maxSurge: 0
+  #     maxUnavailable: 1
+  #   type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "helm-kube.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "helm-kube.labels" . | nindent 8 }}
+        app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+    spec:
+      serviceAccountName: {{ template "helm-kube.serviceAccountName" . }}
+
+# {{- with .Values.statefulSet.securityContext }}
+#       securityContext:
+# {{ toYaml . | nindent 8 }}
+# {{- end }}
+# ..............................................................................
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.statefulSet.image.repository }}:{{ .Values.statefulSet.image.tag }}"
+        imagePullPolicy: {{ .Values.statefulSet.image.pullPolicy }}
+
+{{- with .Values.statefulSet.extraCommands }}
+        command:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.extraArgs }}
+        args:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.extraEnv }}
+        env:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.extraPorts }}
+        ports:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.extraVolumeMounts }}
+        volumeMounts:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.readinessProbe }}
+        readinessProbe:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.livenessProbe }}
+        livenessProbe:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.resources }}
+        resources:
+{{- toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.containerSecurityContext }}
+        securityContext:
+{{ toYaml . | nindent 10 }}
+{{- end }}
+
+{{- with .Values.statefulSet.image.pullSecrets }}
+      imagePullSecrets:
+{{- range . }}
+        - name: {{ . }}
+{{- end }}
+{{- end }}
+
+{{- with .Values.statefulSet.nodeSelector }}
+      nodeSelector:
+{{- toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.statefulSet.priorityClassName }}
+      priorityClassName: "{{ . }}"
+{{- end }}
+
+{{- with .Values.statefulSet.tolerations }}
+      tolerations:
+{{- toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.statefulSet.affinity }}
+      affinity:
+{{- toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.statefulSet.extraVolumes }}
+  volumeClaimTemplates:
+{{- toYaml . | nindent 4 }}
+{{- end }}

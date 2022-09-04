@@ -1,0 +1,20 @@
+---
+{{ if .Values.persistentVolumeClaim.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "helm-kube.fullname" . }}
+  labels:
+    {{- include "helm-kube.labels" . | nindent 4 }}
+# ..............................................................................
+spec:
+{{- with .Values.persistentVolumeClaim.accessModes }}
+  accessModes:
+{{- toYaml . | nindent 4 }}
+{{- end }}
+
+  volumeMode: {{ .Values.persistentVolumeClaim.volumeMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolumeClaim.storage }}
+{{- end }}
