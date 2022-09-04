@@ -177,12 +177,12 @@ deployment:
     - name: CMK_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: checkmk-checkmk-credential
+          name: checkmk-credential
           key: password
     - name: CMK_SITE_ID
       valueFrom:
         configMapKeyRef:
-          name: checkmk-checkmk
+          name: checkmk
           key: siteid
 
   ## Additional container ports
@@ -217,7 +217,7 @@ deployment:
         sizeLimit: 64Mi
     - name: data
       persistentVolumeClaim:
-        claimName: checkmk-data
+        claimName: checkmk
     # - name: factor-token
     #   projected:
     #     sources:
