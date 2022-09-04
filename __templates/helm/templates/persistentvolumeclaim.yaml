@@ -1,4 +1,5 @@
 ---
+{{ if .Values.persistentVolumeClaim.enabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -7,8 +8,13 @@ metadata:
     {{- include "helm-kube.labels" . | nindent 4 }}
 # ..............................................................................
 spec:
-  accessModes: ["ReadWriteOnce"]
-  volumeMode: Filesystem
+{{- with .Values.persistentVolumeClaim.accessModes }}
+  accessModes:
+{{- toYaml . | nindent 4 }}
+{{- end }}
+
+  volumeMode: {{ .Values.persistentVolumeClaim.volumeMode }}
   resources:
     requests:
-      storage: 1Gi
+      storage: {{ .Values.persistentVolumeClaim.storage }}
+{{- end }}
