@@ -31,6 +31,7 @@ spec:
 {{ toYaml . | nindent 8 }}
 {{- end }}
 # ..............................................................................
+      restartPolicy: Always
       containers:
       - name: {{ .Chart.Name }}
         image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"

@@ -43,7 +43,9 @@ ingress:
 ## _____________________________________________________________________________
 secret:
   enabled: false
-  type: Opaque
+  annotations:
+    kubernetes.io/service-account.name: template-service-account
+  type: Opaque # Opaque | kubernetes.io/service-account-token
   stringData: null
   data: null
 
@@ -59,7 +61,7 @@ configMap:
 ## _____________________________________________________________________________
 serviceAccount:
   create: false
-  name:
+  name: template-service-account
 
 ## DEPLOYMENT
 ## =============================================================================
