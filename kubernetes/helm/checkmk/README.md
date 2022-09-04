@@ -39,7 +39,7 @@ with own changes here: <https://github.com/MVladislav/checkmk_kube_agent/tree/ma
 get password from kubectl-token:
 
 ```sh
-$kubectl get secret checkmk-token -n checkmk-n -o=jsonpath='{.data.token}' | base64 --decode
+$kubectl get secret checkmk-token -n checkmk -o=jsonpath='{.data.token}' | base64 --decode
 ```
 
 open `Setup > General > Passwords > Add password`\
@@ -52,7 +52,7 @@ and add the password
 get cert from kubectl-token:
 
 ```sh
-$kubectl get secret checkmk-token -n checkmk-n -o=jsonpath='{.data.ca\.crt}' | base64 --decode
+$kubectl get secret checkmk-token -n checkmk -o=jsonpath='{.data.ca\.crt}' | base64 --decode
 ```
 
 open `Setup > General > Global settings > Site management > Trusted certificate authorities for SSL`
@@ -83,7 +83,7 @@ and for enrich the data, user also the internal service-ip from **checkmk-monito
 with the default port `8080`.
 
 ```sh
-$kubectl get service -n checkmk-n | grep cluster
+$kubectl get service -n checkmk | grep cluster
 ```
 
 ![kubernetes](__docs/2022-09-01-20-45-38.png)

@@ -143,6 +143,7 @@ deployment:
   image:
     ## Repository for container
     repository: checkmk/check-mk-free
+    # https://hub.docker.com/r/checkmk/check-mk-free/tags
     tag: 2.1.0p11
     pullPolicy: IfNotPresent
     pullSecrets: []

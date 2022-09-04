@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "helm-kube.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
     {{- include "helm-kube.labels" . | nindent 4 }}
@@ -67,12 +68,12 @@ spec:
             {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- if .Values.deployment.resources.enabled }}
+{{- if .Values.statefulSet.resources.enabled }}
           resources:
             requests:
-{{ toYaml .Values.deployment.resources.requests | indent 14 }}
+{{ toYaml .Values.statefulSet.resources.requests | indent 14 }}
             limits:
-{{ toYaml .Values.deployment.resources.limits | indent 14 }}
+{{ toYaml .Values.statefulSet.resources.limits | indent 14 }}
 {{- end }}
 
 {{- with .Values.statefulSet.containerSecurityContext }}
@@ -122,7 +123,7 @@ spec:
                       operator: In
                       values:
                         - {{ template "helm-kube.name" . }}
-{{- with .Values.deployment.affinity }}
+{{- with .Values.statefulSet.affinity }}
         {{- toYaml . | nindent 8 }}
 {{- end }}
 

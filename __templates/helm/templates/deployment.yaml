@@ -3,6 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "helm-kube.fullname" . }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
     {{- include "helm-kube.labels" . | nindent 4 }}
