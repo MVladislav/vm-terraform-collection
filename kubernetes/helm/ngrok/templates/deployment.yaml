@@ -8,12 +8,12 @@ metadata:
     {{- include "helm-kube.labels" . | nindent 4 }}
 # ..............................................................................
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.deployment.replicaCount }}
   strategy:
-    rollingUpdate:
-      maxSurge: 0
-      maxUnavailable: 1
-    type: RollingUpdate
+    # rollingUpdate:
+    #   maxSurge: 0
+    #   maxUnavailable: 1
+    type: {{ .Values.deployment.updateStrategy | default "RollingUpdate" }}
   selector:
     matchLabels:
       {{- include "helm-kube.selectorLabels" . | nindent 6 }}
@@ -23,91 +23,119 @@ spec:
       labels:
         {{- include "helm-kube.labels" . | nindent 8 }}
         app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+      # {{- if .Values.persistentVolumeClaim.velero.enabled }}
+      # annotations:
+      #   backup.velero.io/backup-volumes: data
+      # {{- end }}
+# ..............................................................................
     spec:
       serviceAccountName: {{ template "helm-kube.serviceAccountName" . }}
-
-{{- with .Values.securityContext }}
+{{- with .Values.deployment.securityContext }}
       securityContext:
 {{ toYaml . | nindent 8 }}
 {{- end }}
 # ..............................................................................
+      restartPolicy: Always
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
 
-{{- with .Values.extraCommands }}
-        command:
-{{- toYaml . | nindent 10 }}
+{{- with .Values.deployment.extraCommands }}
+          command:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.extraArgs }}
-        args:
-{{- toYaml . | nindent 10 }}
+{{- with .Values.deployment.extraArgs }}
+          args:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.extraEnv }}
-        env:
-{{- toYaml . | nindent 10 }}
+{{- with .Values.deployment.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.extraPorts }}
-        ports:
-{{- toYaml . | nindent 10 }}
+{{- with .Values.deployment.extraPorts }}
+          ports:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.extraVolumeMounts }}
-        volumeMounts:
-{{- toYaml . | nindent 10 }}
+{{- with .Values.deployment.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.readinessProbe }}
-        readinessProbe:
-{{- toYaml . | nindent 10 }}
+{{- with .Values.deployment.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.livenessProbe }}
-        livenessProbe:
-{{- toYaml . | nindent 10 }}
+{{- with .Values.deployment.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.resources }}
-        resources:
-{{- toYaml . | nindent 10 }}
+{{- if .Values.deployment.resources.enabled }}
+          resources:
+            requests:
+{{ toYaml .Values.deployment.resources.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.deployment.resources.limits | indent 14 }}
 {{- end }}
 
-{{- with .Values.containerSecurityContext }}
-        securityContext:
-{{ toYaml . | nindent 10 }}
+{{- with .Values.deployment.containerSecurityContext }}
+          securityContext:
+{{ toYaml . | nindent 12 }}
 {{- end }}
 
-{{- with .Values.image.pullSecrets }}
+{{- with .Values.deployment.image.pullSecrets }}
       imagePullSecrets:
 {{- range . }}
         - name: {{ . }}
 {{- end }}
 {{- end }}
 
-{{- with .Values.nodeSelector }}
+{{- with .Values.deployment.nodeSelector }}
       nodeSelector:
-{{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 
-{{- with .Values.priorityClassName }}
+{{- with .Values.deployment.priorityClassName }}
       priorityClassName: "{{ . }}"
 {{- end }}
 
-{{- with .Values.extraVolumes }}
+{{- with .Values.deployment.extraVolumes }}
       volumes:
-{{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 
-{{- with .Values.tolerations }}
+{{- with .Values.deployment.tolerations }}
       tolerations:
-{{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 
-{{- with .Values.affinity }}
       affinity:
-{{- toYaml . | nindent 8 }}
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: {{ .Values.persistentVolumeClaim.enabled | ternary "91" "89" }}
+              preference:
+                matchExpressions:
+                  - key: application/state
+                    operator: In
+                    values:
+                      - {{ .Values.persistentVolumeClaim.enabled | ternary "stateful" "stateless" }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 90
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ template "helm-kube.name" . }}
+{{- with .Values.deployment.affinity }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
