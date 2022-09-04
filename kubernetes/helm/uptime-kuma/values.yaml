@@ -30,10 +30,10 @@ ingress:
     - "/"
   hosts:
     - kuma.home.local
-  tls:
-    - secretName: kuma-home-local
-      hosts:
-        - kuma.home.local
+
+  tls: true
+  secretName: kuma-home-local
+
   customPaths: []
 
 ## SERVICE_ACCOUNT
@@ -42,9 +42,17 @@ serviceAccount:
   create: false
   name:
 
+## PERSISTENT_VOLUME_CLAIM
+## =============================================================================
+persistentVolumeClaim:
+  enabled: true
+
 ## STATEFUL_SET
 ## =============================================================================
 statefulSet:
+  replicaCount: 1
+  updateStrategy: Recreate # RollingUpdate | Recreate
+
   ## IMAGE
   ## _____________________________________________________________________________
   image:
@@ -61,15 +69,22 @@ statefulSet:
       path: /
       port: 3001
       scheme: HTTP
-    initialDelaySeconds: 5
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
   livenessProbe:
     httpGet:
       path: /
       port: 3001
     # Number of seconds to wait for probe response
-    timeoutSeconds: 30
+    timeoutSeconds: 5
     # Number of seconds to wait before sending first probe
-    initialDelaySeconds: 30
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
 
   ## Additional container commands
   ## _____________________________________________________________________________
@@ -118,12 +133,13 @@ statefulSet:
   ## Pod resource requests & limits
   ## _____________________________________________________________________________
   resources:
+    enabled: true
     requests:
       cpu: 100m
       memory: 200Mi
     limits:
-      cpu: 2
-      memory: 500Mi
+      cpu: 1
+      memory: 1024Mi
 
   ## To disable set the following configuration to null:
   ## _____________________________________________________________________________

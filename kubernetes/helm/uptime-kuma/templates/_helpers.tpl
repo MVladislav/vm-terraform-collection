@@ -43,12 +43,16 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Common labels
 */}}
 {{- define "helm-kube.labels" -}}
+app: {{ include "helm-kube.name" . }}
 helm.sh/chart: {{ include "helm-kube.chart" . }}
+# chart: {{ include "helm-kube.chart" . }}
 {{ include "helm-kube.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+heritage: {{ .Release.Service }}
+release: {{ .Release.Name }}
 {{- end }}
 
 {{/*
