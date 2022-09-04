@@ -33,7 +33,7 @@ jobs:
       - name: Run Datree Policy Check - ngrok
         uses: datreeio/action-datree@main
         with:
-          path: "kubernetes/helm/ngrok/*.yaml"
+          path: "kubernetes/helm/ngrok"
           cliArguments: "--only-k8s-files"
           isHelmChart: true
           helmArguments: "--values values.yaml"
