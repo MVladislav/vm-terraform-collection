@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,49 +38,48 @@ spec:
 
 {{- with .Values.extraCommands }}
         command:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraArgs }}
         args:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraEnv }}
         env:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraPorts }}
         ports:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.extraVolumeMounts }}
         volumeMounts:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.readinessProbe }}
         readinessProbe:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.livenessProbe }}
         livenessProbe:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.resources }}
         resources:
-{{ toYaml . | nindent 10 }}
+{{- toYaml . | nindent 10 }}
 {{- end }}
 
 {{- with .Values.containerSecurityContext }}
         securityContext:
 {{ toYaml . | nindent 10 }}
 {{- end }}
-
 
 {{- with .Values.image.pullSecrets }}
       imagePullSecrets:
@@ -90,7 +90,7 @@ spec:
 
 {{- with .Values.nodeSelector }}
       nodeSelector:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}
 
 {{- with .Values.priorityClassName }}
@@ -98,15 +98,16 @@ spec:
 {{- end }}
 
 {{- with .Values.extraVolumes }}
-{{ toYaml . | nindent 6 }}
+      volumes:
+{{- toYaml . | nindent 8 }}
 {{- end }}
 
 {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}
 
 {{- with .Values.affinity }}
       affinity:
-{{ toYaml . | nindent 8 }}
+{{- toYaml . | nindent 8 }}
 {{- end }}
