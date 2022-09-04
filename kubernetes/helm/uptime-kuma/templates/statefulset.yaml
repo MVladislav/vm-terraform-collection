@@ -97,11 +97,6 @@ spec:
       priorityClassName: "{{ . }}"
 {{- end }}
 
-{{- with .Values.statefulSet.extraVolumes }}
-      volumeClaimTemplates:
-{{- toYaml . | nindent 8 }}
-{{- end }}
-
 {{- with .Values.statefulSet.tolerations }}
       tolerations:
 {{- toYaml . | nindent 8 }}
@@ -110,4 +105,9 @@ spec:
 {{- with .Values.statefulSet.affinity }}
       affinity:
 {{- toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.statefulSet.extraVolumes }}
+  volumeClaimTemplates:
+{{- toYaml . | nindent 4 }}
 {{- end }}
