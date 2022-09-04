@@ -1,0 +1,158 @@
+---
+## BASE
+## _____________________________________________________________________________
+nameOverride: ""
+fullnameOverride: ""
+
+## SERVICE
+## _____________________________________________________________________________
+service:
+  type: ClusterIP
+  targetName: http
+  targetPort: 3001
+  targetProtocol: TCP
+  externalPort: 3001
+
+## INGRES
+## _____________________________________________________________________________
+ingress:
+  enabled: true
+
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cert-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: ""
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+  className: traefik
+
+  paths:
+    - "/"
+  hosts:
+    - kuma.home.local
+  tls:
+    - secretName: kuma-home-local
+      hosts:
+        - kuma.home.local
+  customPaths: []
+
+## SERVICE_ACCOUNT
+## _____________________________________________________________________________
+serviceAccount:
+  create: false
+  name:
+
+## STATEFUL_SET
+## =============================================================================
+statefulSet:
+  ## IMAGE
+  ## _____________________________________________________________________________
+  image:
+    ## Repository for container
+    repository: louislam/uptime-kuma
+    tag: 1.18.0-beta.0
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## PROBES
+  ## _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3001
+      scheme: HTTP
+    initialDelaySeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 3001
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 30
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 30
+
+  ## Additional container commands
+  ## _____________________________________________________________________________
+  extraCommands: []
+  #   - ...
+
+  ## Additional container arguments
+  ## _____________________________________________________________________________
+  extraArgs: []
+  #   - --...
+
+  ## Additional container environment variables
+  ## _____________________________________________________________________________
+  extraEnv:
+    - name: UPTIME_KUMA_PORT
+      value: "3001"
+    - name: PORT
+      value: "3001"
+
+  ## Additional container ports
+  ## _____________________________________________________________________________
+  extraPorts:
+    - name: http
+      containerPort: 3001
+      protocol: TCP
+
+  ## Additional volumeMounts to be added to container
+  ## _____________________________________________________________________________
+  extraVolumeMounts:
+    - name: data
+      mountPath: /app/data
+      readOnly: false
+
+  ## Additional volumes to be added to pods
+  ## _____________________________________________________________________________
+  extraVolumes:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        volumeMode: Filesystem
+        resources:
+          requests:
+            storage: 2Gi
+
+  ## Pod resource requests & limits
+  ## _____________________________________________________________________________
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 2
+      memory: 500Mi
+
+  ## To disable set the following configuration to null:
+  ## _____________________________________________________________________________
+  containerSecurityContext: null
+  # containerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   runAsUser: 1001
+  #   runAsGroup: 2001
+
+  ## Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## _____________________________________________________________________________
+  nodeSelector: {}
+
+  ## Name of Priority Class of pods
+  ## _____________________________________________________________________________
+  # priorityClassName: ""
+
+  ## List of node taints to tolerate (requires Kubernetes >= 1.6)
+  ## _____________________________________________________________________________
+  tolerations: []
+  #   - key: "key"
+  #     operator: "Equal|Exists"
+  #     value: "value"
+  #     effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+  ## Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## _____________________________________________________________________________
+  affinity: {}

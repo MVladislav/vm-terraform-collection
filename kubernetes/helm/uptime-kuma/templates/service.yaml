@@ -1,0 +1,31 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "helm-kube.fullname" . }}
+  labels:
+    {{- include "helm-kube.labels" . | nindent 4 }}
+# ..............................................................................
+spec:
+  type: {{ .Values.service.type }}
+{{- if hasKey .Values.service "clusterIP" }}
+  clusterIP: {{ .Values.service.clusterIP }}
+{{- end }}
+  ports:
+    - port: {{ .Values.service.externalPort }}
+      name: {{ .Values.service.targetName }}
+      targetPort: {{ .Values.service.targetPort }}
+      protocol: {{ .Values.service.targetProtocol }}
+{{- if hasKey .Values.service "nodePort" }}
+      nodePort: {{ .Values.service.nodePort }}
+{{- end }}
+{{- if .Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml .Values.service.loadBalancerSourceRanges | nindent 4 }}
+{{- end }}
+  selector:
+{{- include "helm-kube.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+{{- if .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP }}
+{{- end }}
