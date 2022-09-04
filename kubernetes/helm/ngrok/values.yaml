@@ -119,7 +119,7 @@ extraVolumeMounts:
 extraVolumes:
   - name: config
     secret:
-      secretName: ngrok-ngrok
+      secretName: ngrok
 
 ## Pod resource requests & limits
 ## _____________________________________________________________________________
