@@ -123,7 +123,7 @@ serviceAccount:
 ## PERSISTENT_VOLUME_CLAIM
 ## =============================================================================
 persistentVolumeClaim:
-  enabled: false
+  enabled: true
   accessModes:
     - ReadWriteOnce
   volumeMode: Filesystem
@@ -131,7 +131,7 @@ persistentVolumeClaim:
 
 ## STATEFUL_SET
 ## =============================================================================
-statefulSet:
+deployment:
   replicaCount: 2
 
   ## IMAGE
@@ -195,6 +195,10 @@ statefulSet:
   ## Additional volumeMounts to be added to container
   ## _____________________________________________________________________________
   extraVolumeMounts:
+    - name: localtime
+      mountPath: /etc/localtime
+    - name: tmpfs
+      mountPath: /opt/omd/sites/cmk/tmp
     - name: data
       mountPath: /omd/sites
     # - name: factor-token
@@ -203,14 +207,17 @@ statefulSet:
   ## Additional volumes to be added to pods
   ## _____________________________________________________________________________
   extraVolumes:
-    - metadata:
-        name: data
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        volumeMode: Filesystem
-        resources:
-          requests:
-            storage: 2Gi
+    - name: localtime
+      hostPath:
+        path: /etc/localtime
+        type: File
+    - name: tmpfs
+      emptyDir:
+        medium: Memory
+        sizeLimit: 64Mi
+    - name: data
+      persistentVolumeClaim:
+        claimName: checkmk-data
     # - name: factor-token
     #   projected:
     #     sources:
