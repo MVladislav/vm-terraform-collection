@@ -7,14 +7,25 @@
 ---
 
 - [SETUP](#setup)
-  - [todos](#todos)
+  - [test helm syntax](#test-helm-syntax)
   - [References](#references)
 
 ---
 
-## todos
+## test helm syntax
 
-...
+dry-run with helm:
+
+```sh
+$helm install --debug --dry-run test .
+```
+
+datree policy check:
+
+```sh
+$helm plugin install https://github.com/datreeio/helm-datree
+$helm datree test . -- --values values.yaml
+```
 
 ---
 

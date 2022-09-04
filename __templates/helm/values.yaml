@@ -4,20 +4,6 @@
 nameOverride: ""
 fullnameOverride: ""
 
-## APPLICATION
-## _____________________________________________________________________________
-ngrok:
-  a: ...
-
-## IMAGE
-## _____________________________________________________________________________
-image:
-  ## Repository for container
-  repository: ...
-  tag: latest
-  pullPolicy: IfNotPresent
-  pullSecrets: []
-
 ## SERVICE
 ## _____________________________________________________________________________
 service:
@@ -61,112 +47,244 @@ secret:
   stringData: null
   data: null
 
+## CONFIG_MAP
+## _____________________________________________________________________________
+configMap:
+  enabled: false
+  data:
+    config.yaml: |
+      ...
+
 ## SERVICE_ACCOUNT
 ## _____________________________________________________________________________
 serviceAccount:
   create: false
   name:
 
-## PROBES
-## _____________________________________________________________________________
-readinessProbe:
-  httpGet:
-    path: /
-    port: 4040
-    scheme: HTTP
-  initialDelaySeconds: 5
-livenessProbe:
-  httpGet:
-    path: /
-    port: 4040
-  # Number of seconds to wait for probe response
-  timeoutSeconds: 30
-  # Number of seconds to wait before sending first probe
-  initialDelaySeconds: 30
+## DEPLOYMENT
+## =============================================================================
+deployment:
+  ## IMAGE
+  ## _____________________________________________________________________________
+  image:
+    ## Repository for container
+    repository: ...
+    tag: latest
+    pullPolicy: IfNotPresent
+    pullSecrets: []
 
-## Additional container commands
-## _____________________________________________________________________________
-extraCommands: []
-#   - ...
+  ## PROBES
+  ## _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 4040
+      scheme: HTTP
+    initialDelaySeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 4040
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 30
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 30
 
-## Additional container arguments
-## _____________________________________________________________________________
-extraArgs: []
-#   - --...
+  ## Additional container commands
+  ## _____________________________________________________________________________
+  extraCommands: []
+  #   - ...
 
-## Additional container environment variables
-## _____________________________________________________________________________
-extraEnv: []
-#   - name: SOME_VAR
-#     value: 'some value'
+  ## Additional container arguments
+  ## _____________________________________________________________________________
+  extraArgs: []
+  #   - --...
 
-## Additional container ports
-## _____________________________________________________________________________
-extraPorts: []
-#   - name: http
-#     containerPort: 4040
-#     protocol: TCP
+  ## Additional container environment variables
+  ## _____________________________________________________________________________
+  extraEnv: []
+  #   - name: SOME_VAR
+  #     value: 'some value'
 
-## Additional volumeMounts to be added to container
-## _____________________________________________________________________________
-extraVolumeMounts: []
-#   - name: volName
-#     mountPath: /volPath
-#     readOnly: true
+  ## Additional container ports
+  ## _____________________________________________________________________________
+  extraPorts: []
+  #   - name: http
+  #     containerPort: 4040
+  #     protocol: TCP
 
-## Additional volumes to be added to pods
-## _____________________________________________________________________________
-extraVolumes: []
-#   - name: volName
-#     secret:
-#       secretName: volSecName
-#       # defaultMode: 420
-#   - name: volName
-#     emptyDir: {}
-#   - name: volName
-#     configMap:
-#       name: volConMapName
-#       items:
-#         - key: config.yaml
-#           path: config.yaml
+  ## Additional volumeMounts to be added to container
+  ## _____________________________________________________________________________
+  extraVolumeMounts: []
+  #   - name: volName
+  #     mountPath: /volPath
+  #     readOnly: true
 
-## Pod resource requests & limits
-## _____________________________________________________________________________
-resources:
-  requests:
-    cpu: 100m
-    memory: 200Mi
-  limits:
-    cpu: 2
-    memory: 200Mi
+  ## Additional volumes to be added to pods
+  ## _____________________________________________________________________________
+  extraVolumes: []
+  #   - name: volName
+  #     secret:
+  #       secretName: volSecName
+  #       # defaultMode: 420
+  #   - name: volName
+  #     emptyDir: {}
+  #   - name: volName
+  #     configMap:
+  #       name: volConMapName
+  #       items:
+  #         - key: config.yaml
+  #           path: config.yaml
 
-## To disable set the following configuration to null:
-## _____________________________________________________________________________
-containerSecurityContext: null
-# containerSecurityContext:
-#   allowPrivilegeEscalation: false
-#   readOnlyRootFilesystem: true
-#   runAsUser: 1001
-#   runAsGroup: 2001
+  ## Pod resource requests & limits
+  ## _____________________________________________________________________________
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 2
+      memory: 200Mi
 
-## Node labels for pod assignment
-## Ref: https://kubernetes.io/docs/user-guide/node-selection/
-## _____________________________________________________________________________
-nodeSelector: {}
+  ## To disable set the following configuration to null:
+  ## _____________________________________________________________________________
+  containerSecurityContext: null
+  # containerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   runAsUser: 1001
+  #   runAsGroup: 2001
 
-## Name of Priority Class of pods
-## _____________________________________________________________________________
-# priorityClassName: ""
+  ## Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## _____________________________________________________________________________
+  nodeSelector: {}
 
-## List of node taints to tolerate (requires Kubernetes >= 1.6)
-## _____________________________________________________________________________
-tolerations: []
-#   - key: "key"
-#     operator: "Equal|Exists"
-#     value: "value"
-#     effect: "NoSchedule|PreferNoSchedule|NoExecute"
+  ## Name of Priority Class of pods
+  ## _____________________________________________________________________________
+  # priorityClassName: ""
 
-## Affinity for pod assignment
-## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-## _____________________________________________________________________________
-affinity: {}
+  ## List of node taints to tolerate (requires Kubernetes >= 1.6)
+  ## _____________________________________________________________________________
+  tolerations: []
+  #   - key: "key"
+  #     operator: "Equal|Exists"
+  #     value: "value"
+  #     effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+  ## Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## _____________________________________________________________________________
+  affinity: {}
+
+## STATEFUL_SET
+## =============================================================================
+statefulSet:
+  ## IMAGE
+  ## _____________________________________________________________________________
+  image:
+    ## Repository for container
+    repository: ...
+    tag: latest
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## PROBES
+  ## _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 4040
+      scheme: HTTP
+    initialDelaySeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 4040
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 30
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 30
+
+  ## Additional container commands
+  ## _____________________________________________________________________________
+  extraCommands: []
+  #   - ...
+
+  ## Additional container arguments
+  ## _____________________________________________________________________________
+  extraArgs: []
+  #   - --...
+
+  ## Additional container environment variables
+  ## _____________________________________________________________________________
+  extraEnv: []
+  #   - name: SOME_VAR
+  #     value: 'some value'
+
+  ## Additional container ports
+  ## _____________________________________________________________________________
+  extraPorts: []
+  #   - name: http
+  #     containerPort: 4040
+  #     protocol: TCP
+
+  ## Additional volumeMounts to be added to container
+  ## _____________________________________________________________________________
+  extraVolumeMounts: []
+  #   - name: volName
+  #     mountPath: /volPath
+  #     readOnly: true
+
+  ## Additional volumes to be added to pods
+  ## _____________________________________________________________________________
+  extraVolumes: []
+  #   - metadata:
+  #       name: data
+  #     spec:
+  #       accessModes: ["ReadWriteOnce"]
+  #       volumeMode: Filesystem
+  #       resources:
+  #         requests:
+  #           storage: 2Gi
+
+  ## Pod resource requests & limits
+  ## _____________________________________________________________________________
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 2
+      memory: 200Mi
+
+  ## To disable set the following configuration to null:
+  ## _____________________________________________________________________________
+  containerSecurityContext: null
+  # containerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   runAsUser: 1001
+  #   runAsGroup: 2001
+
+  ## Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## _____________________________________________________________________________
+  nodeSelector: {}
+
+  ## Name of Priority Class of pods
+  ## _____________________________________________________________________________
+  # priorityClassName: ""
+
+  ## List of node taints to tolerate (requires Kubernetes >= 1.6)
+  ## _____________________________________________________________________________
+  tolerations: []
+  #   - key: "key"
+  #     operator: "Equal|Exists"
+  #     value: "value"
+  #     effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+  ## Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## _____________________________________________________________________________
+  affinity: {}
