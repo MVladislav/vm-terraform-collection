@@ -56,7 +56,13 @@ spec:
 
   {{- if .Values.ingress.tls }}
   tls:
-    {{- toYaml .Values.ingress.tls | nindent 4 }}
-  {{- end -}}
+    - secretName: {{ .Values.ingress.secretName }}
+    {{- if .Values.ingress.hosts }}
+      hosts:
+      {{- range $host := .Values.ingress.hosts }}
+        - {{ $host }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
 
-{{- end -}}
+{{- end }}

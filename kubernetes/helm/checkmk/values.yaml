@@ -30,10 +30,10 @@ ingress:
     - "/"
   hosts:
     - checkmk.home.local
-  tls:
-    - secretName: checkmk-home-local
-      hosts:
-        - checkmk.home.local
+
+  tls: true
+  secretName: checkmk-home-local
+
   customPaths: []
 
 ## SECRET
@@ -128,11 +128,15 @@ persistentVolumeClaim:
     - ReadWriteOnce
   volumeMode: Filesystem
   storage: 4Gi
+  storageClass: ""
+  velero:
+    enabled: false
 
 ## STATEFUL_SET
 ## =============================================================================
 deployment:
   replicaCount: 2
+  updateStrategy: Recreate # RollingUpdate | Recreate
 
   ## IMAGE
   ## _____________________________________________________________________________
@@ -143,23 +147,30 @@ deployment:
     pullPolicy: IfNotPresent
     pullSecrets: []
 
-  ## PROBES
-  ## current not working
-  ## _____________________________________________________________________________
-  # readinessProbe:
-  #   httpGet:
-  #     path: /
-  #     port: 5000
-  #     scheme: HTTP
-  #   initialDelaySeconds: 5
-  # livenessProbe:
-  #   httpGet:
-  #     path: /
-  #     port: 5000
-  #   # Number of seconds to wait for probe response
-  #   timeoutSeconds: 30
-  #   # Number of seconds to wait before sending first probe
-  #   initialDelaySeconds: 30
+  # PROBES
+  # current not working
+  # _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 5000
+      scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 5000
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 5
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
 
   ## Additional container commands
   ## _____________________________________________________________________________
@@ -229,6 +240,7 @@ deployment:
   ## Pod resource requests & limits
   ## _____________________________________________________________________________
   resources:
+    enabled: true
     limits:
       memory: 4Gi
       cpu: "3000m"
