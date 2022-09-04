@@ -38,4 +38,5 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ template "helm-kube.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
 {{- end }}
