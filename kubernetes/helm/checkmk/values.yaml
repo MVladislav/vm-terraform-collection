@@ -45,7 +45,7 @@ secretCredential:
     # Sets cmk as default password.
     # To set your own password, replace it, e.g.
     # using "echo -n 'password' | base64"
-    password: <CHANGE>
+    password: <PASSWORD-BASE64 run `echo -n 'password' | base64`>
 
 secretToken:
   enabled: true
@@ -123,7 +123,7 @@ serviceAccount:
 ## PERSISTENT_VOLUME_CLAIM
 ## =============================================================================
 persistentVolumeClaim:
-  enabled: true
+  enabled: false
   accessModes:
     - ReadWriteOnce
   volumeMode: Filesystem
@@ -175,12 +175,12 @@ statefulSet:
     - name: CMK_PASSWORD
       valueFrom:
         secretKeyRef:
-          name: checkmk-credential
+          name: checkmk-checkmk-credential
           key: password
     - name: CMK_SITE_ID
       valueFrom:
         configMapKeyRef:
-          name: checkmk
+          name: checkmk-checkmk
           key: siteid
 
   ## Additional container ports
