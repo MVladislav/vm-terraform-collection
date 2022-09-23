@@ -15,6 +15,7 @@ terraform {
       source  = "hashicorp/helm"
       version = "2.5.1"
     }
+
   }
 
 }
@@ -48,31 +49,11 @@ variable "kube_config_context" {
   type = string
 }
 
-# ------------------------------------------------------------------------------
-
 variable "kube_cert_cluster_issuer" {
   type = string
 }
 
 variable "kube_cert_ingress_class" {
-  type = string
-}
-
-# ------------------------------------------------------------------------------
-
-variable "kube_traefik_entrypoints" {
-  type = string
-}
-
-variable "kube_traefik_tls" {
-  type = string
-}
-
-variable "kube_traefik_middlewares" {
-  type = string
-}
-
-variable "kube_public_hostname" {
   type = string
 }
 

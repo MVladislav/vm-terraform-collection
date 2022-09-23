@@ -1,0 +1,142 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "helm-kube.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+    {{- include "helm-kube.labels" . | nindent 4 }}
+# ..............................................................................
+spec:
+  replicas: {{ .Values.deployment.replicaCount }}
+  strategy:
+    # rollingUpdate:
+    #   maxSurge: 0
+    #   maxUnavailable: 1
+    type: {{ .Values.deployment.updateStrategy | default "RollingUpdate" }}
+  selector:
+    matchLabels:
+      {{- include "helm-kube.selectorLabels" . | nindent 6 }}
+      app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "helm-kube.labels" . | nindent 8 }}
+        app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
+      # {{- if .Values.persistentVolumeClaim.velero.enabled }}
+      # annotations:
+      #   backup.velero.io/backup-volumes: data
+      # {{- end }}
+# ..............................................................................
+    spec:
+      serviceAccountName: {{ template "helm-kube.serviceAccountName" . }}
+{{- with .Values.deployment.securityContext }}
+      securityContext:
+{{ toYaml . | nindent 8 }}
+{{- end }}
+# ..............................................................................
+      restartPolicy: Always
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.deployment.image.repository }}:{{ .Values.deployment.image.tag }}"
+          imagePullPolicy: {{ .Values.deployment.image.pullPolicy }}
+
+{{- with .Values.deployment.extraCommands }}
+          command:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+
+{{- with .Values.deployment.extraArgs }}
+          args:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+
+{{- with .Values.deployment.extraEnv }}
+          env:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+
+{{- with .Values.deployment.extraPorts }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+
+{{- with .Values.deployment.extraVolumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+
+{{- with .Values.deployment.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+
+{{- with .Values.deployment.livenessProbe }}
+          livenessProbe:
+            {{- toYaml . | nindent 12 }}
+{{- end }}
+
+{{- if .Values.deployment.resources.enabled }}
+          resources:
+            requests:
+{{ toYaml .Values.deployment.resources.requests | indent 14 }}
+            limits:
+{{ toYaml .Values.deployment.resources.limits | indent 14 }}
+{{- end }}
+
+{{- with .Values.deployment.containerSecurityContext }}
+          securityContext:
+{{ toYaml . | nindent 12 }}
+{{- end }}
+
+{{- with .Values.deployment.image.pullSecrets }}
+      imagePullSecrets:
+{{- range . }}
+        - name: {{ . }}
+{{- end }}
+{{- end }}
+
+{{- with .Values.deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.deployment.priorityClassName }}
+      priorityClassName: "{{ . }}"
+{{- end }}
+
+{{- with .Values.deployment.extraVolumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+
+{{- with .Values.deployment.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+{{- end }}
+
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: {{ .Values.persistentVolumeClaim.enabled | ternary "91" "89" }}
+              preference:
+                matchExpressions:
+                  - key: application/state
+                    operator: In
+                    values:
+                      - {{ .Values.persistentVolumeClaim.enabled | ternary "stateful" "stateless" }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 90
+              podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - {{ template "helm-kube.name" . }}
+{{- with .Values.deployment.affinity }}
+        {{- toYaml . | nindent 8 }}
+{{- end }}

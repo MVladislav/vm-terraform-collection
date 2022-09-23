@@ -1,20 +1,27 @@
 terraform {
 
-  required_version = ">= 0.13.0"
+  # https://github.com/hashicorp/terraform/releases
+  required_version = ">= 1.2.8"
 
   required_providers {
+    # https://registry.terraform.io/providers/hashicorp/kubernetes
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.11.0"
+      version = "2.13.1"
     }
+
+    # https://registry.terraform.io/providers/gavinbunney/kubectl
     kubectl = {
       source  = "gavinbunney/kubectl"
       version = "1.14.0"
     }
+
+    # https://registry.terraform.io/providers/hashicorp/helm
     helm = {
       source  = "hashicorp/helm"
-      version = "2.5.1"
+      version = "2.6.0"
     }
+
   }
 
 }
@@ -47,8 +54,6 @@ variable "kube_config_path" {
 variable "kube_config_context" {
   type = string
 }
-
-# ------------------------------------------------------------------------------
 
 variable "kube_cert_cluster_issuer" {
   type = string

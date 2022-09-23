@@ -1,0 +1,372 @@
+---
+## BASE
+## _____________________________________________________________________________
+nameOverride: ""
+fullnameOverride: ""
+
+## SERVICE
+## _____________________________________________________________________________
+service:
+  type: ClusterIP # ClusterIP | NodePort
+  targetName: http
+  targetPort: 4040
+  targetProtocol: TCP # TCP | UDP
+  externalPort: 4040
+  # nodePort: 4040
+  # loadBalancerIP:
+
+## INGRES
+## _____________________________________________________________________________
+ingress:
+  enabled: true
+
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cert-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: ""
+    kubernetes.io/tls-acme: "true"
+  className: traefik
+
+  paths:
+    - "/"
+  hosts:
+    - <template>.home.local
+
+  tls: true
+  secretName: template-secret
+
+  customPaths: []
+
+## SECRET
+## _____________________________________________________________________________
+secret:
+  enabled: false
+  annotations:
+    kubernetes.io/service-account.name: template-service-account
+  type: Opaque # Opaque | kubernetes.io/service-account-token
+  stringData: null
+  data: null
+
+## CONFIG_MAP
+## _____________________________________________________________________________
+configMap:
+  enabled: false
+  data:
+    config.yaml: |
+      ...
+
+## SERVICE_ACCOUNT
+## _____________________________________________________________________________
+serviceAccount:
+  create: true
+  name: template-service-account
+  automountServiceAccountToken: false
+  clusterRole:
+    rules:
+      - apiGroups:
+          - ""
+          - storage.k8s.io
+          - rbac.authorization.k8s.io
+          - apps
+          - extensions
+          - batch
+          - autoscaling
+          - networking.k8s.io/v1beta1
+        resources:
+          - componentstatuses
+          - nodes
+          - nodes/proxy
+          - services
+          - pods
+          - configmaps
+          - secrets
+          - resourcequotas
+          - replicationcontrollers
+          - limitranges
+          - persistentvolumeclaims
+          - persistentvolumes
+          - namespaces
+          - endpoints
+          - storageclasses
+          - clusterroles
+          - roles
+          - daemonsets
+          - deployments
+          - replicasets
+          - ingresses
+          - statefulsets
+          - cronjobs
+          - jobs
+          - horizontalpodautoscalers
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - custom.metrics.k8s.io
+        resources:
+          - "*"
+        verbs:
+          - get
+          - list
+      - nonResourceURLs:
+          - /version
+          - /healthz
+          - /metrics
+        verbs: ["get"]
+
+## PERSISTENT_VOLUME_CLAIM
+## =============================================================================
+persistentVolumeClaim:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  storage: 1Gi
+  storageClass: ""
+  velero:
+    enabled: false
+    restic: true
+    schedule: "@midnight"
+    ttl: 2160h0m00s
+
+## DEPLOYMENT
+## =============================================================================
+deployment:
+  replicaCount: 2
+  updateStrategy: Recreate # RollingUpdate | Recreate
+
+  ## IMAGE
+  ## _____________________________________________________________________________
+  image:
+    ## Repository for container
+    repository: ...
+    tag: 1
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## PROBES
+  ## _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 4040
+      scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 4040
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 5
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+
+  ## Additional container commands
+  ## _____________________________________________________________________________
+  extraCommands: []
+  #   - ...
+
+  ## Additional container arguments
+  ## _____________________________________________________________________________
+  extraArgs: []
+  #   - --...
+
+  ## Additional container environment variables
+  ## _____________________________________________________________________________
+  extraEnv: []
+  #   - name: SOME_VAR
+  #     value: 'some value'
+
+  ## Additional container ports
+  ## _____________________________________________________________________________
+  extraPorts: []
+  #   - name: http
+  #     containerPort: 4040
+  #     protocol: TCP
+
+  ## Additional volumeMounts to be added to container
+  ## _____________________________________________________________________________
+  extraVolumeMounts: []
+  #   - name: volName
+  #     mountPath: /volPath
+  #     readOnly: true
+
+  ## Additional volumes to be added to pods
+  ## _____________________________________________________________________________
+  extraVolumes: []
+  #   - name: volName
+  #     secret:
+  #       secretName: volSecName
+  #       # defaultMode: 420
+  #   - name: volName
+  #     emptyDir: {}
+  #   - name: volName
+  #     configMap:
+  #       name: volConMapName
+  #       items:
+  #         - key: config.yaml
+  #           path: config.yaml
+
+  ## Pod resource requests & limits
+  ## _____________________________________________________________________________
+  resources:
+    enabled: true
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 1
+      memory: 1024Mi
+
+  ## To disable set the following configuration to null:
+  ## _____________________________________________________________________________
+  containerSecurityContext: null
+  # containerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   runAsUser: 1001
+  #   runAsGroup: 2001
+
+  ## Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## _____________________________________________________________________________
+  nodeSelector: {}
+
+  ## Name of Priority Class of pods
+  ## _____________________________________________________________________________
+  # priorityClassName: ""
+
+  ## List of node taints to tolerate (requires Kubernetes >= 1.6)
+  ## _____________________________________________________________________________
+  tolerations: []
+  #   - key: "key"
+  #     operator: "Equal|Exists"
+  #     value: "value"
+  #     effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+  ## Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## _____________________________________________________________________________
+  affinity: {}
+
+## STATEFUL_SET
+## =============================================================================
+statefulSet:
+  replicaCount: 2
+
+  ## IMAGE
+  ## _____________________________________________________________________________
+  image:
+    ## Repository for container
+    repository: ...
+    tag: 1
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## PROBES
+  ## _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 4040
+      scheme: HTTP
+    initialDelaySeconds: 5
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 4040
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 30
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 30
+
+  ## Additional container commands
+  ## _____________________________________________________________________________
+  extraCommands: []
+  #   - ...
+
+  ## Additional container arguments
+  ## _____________________________________________________________________________
+  extraArgs: []
+  #   - --...
+
+  ## Additional container environment variables
+  ## _____________________________________________________________________________
+  extraEnv: []
+  #   - name: SOME_VAR
+  #     value: 'some value'
+
+  ## Additional container ports
+  ## _____________________________________________________________________________
+  extraPorts: []
+  #   - name: http
+  #     containerPort: 4040
+  #     protocol: TCP
+
+  ## Additional volumeMounts to be added to container
+  ## _____________________________________________________________________________
+  extraVolumeMounts: []
+  #   - name: volName
+  #     mountPath: /volPath
+  #     readOnly: true
+
+  ## Additional volumes to be added to pods
+  ## _____________________________________________________________________________
+  extraVolumes: []
+  #   - metadata:
+  #       name: data
+  #     spec:
+  #       accessModes: ["ReadWriteOnce"]
+  #       volumeMode: Filesystem
+  #       resources:
+  #         requests:
+  #           storage: 2Gi
+
+  ## Pod resource requests & limits
+  ## _____________________________________________________________________________
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 2
+      memory: 200Mi
+
+  ## To disable set the following configuration to null:
+  ## _____________________________________________________________________________
+  containerSecurityContext: null
+  # containerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   runAsUser: 1001
+  #   runAsGroup: 2001
+
+  ## Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## _____________________________________________________________________________
+  nodeSelector: {}
+
+  ## Name of Priority Class of pods
+  ## _____________________________________________________________________________
+  # priorityClassName: ""
+
+  ## List of node taints to tolerate (requires Kubernetes >= 1.6)
+  ## _____________________________________________________________________________
+  tolerations: []
+  #   - key: "key"
+  #     operator: "Equal|Exists"
+  #     value: "value"
+  #     effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+  ## Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## _____________________________________________________________________________
+  affinity: {}

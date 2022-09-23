@@ -1,0 +1,179 @@
+---
+## BASE
+## _____________________________________________________________________________
+nameOverride: ""
+fullnameOverride: ""
+
+## SERVICE
+## _____________________________________________________________________________
+service:
+  type: ClusterIP
+  targetName: http
+  targetPort: 4040
+  targetProtocol: TCP
+  externalPort: 4040
+
+## INGRES
+## _____________________________________________________________________________
+ingress:
+  enabled: true
+
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cert-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: ""
+    kubernetes.io/tls-acme: "true"
+  className: traefik
+
+  paths:
+    - /
+  hosts:
+    - ngrok.home.local
+
+  tls: true
+  secretName: ngrok-home-local
+
+  customPaths: []
+
+## SECRET
+## _____________________________________________________________________________
+secret:
+  enabled: true
+  type: Opaque
+  stringData: null
+  data: null
+
+## SERVICE_ACCOUNT
+## _____________________________________________________________________________
+serviceAccount:
+  create: false
+  name:
+
+## PERSISTENT_VOLUME_CLAIM
+## =============================================================================
+persistentVolumeClaim:
+  enabled: true
+  velero:
+    enabled: false
+
+## DEPLOYMENT
+## =============================================================================
+deployment:
+  replicaCount: 1
+  updateStrategy: Recreate # RollingUpdate | Recreate
+
+  ## IMAGE
+  ## _____________________________________________________________________________
+  image:
+    ## Repository for container
+    repository: ngrok/ngrok
+    tag: 3
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  ## PROBES
+  ## _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 4040
+      scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 4040
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 5
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+
+  ## Additional container commands
+  ## _____________________________________________________________________________
+  extraCommands:
+    - ngrok
+
+  ## Additional container arguments
+  ## _____________________________________________________________________________
+  extraArgs:
+    - "start"
+    - "--all"
+    - "--config"
+    - "/tmp/config.yaml"
+
+  ## Additional container environment variables
+  ## _____________________________________________________________________________
+  extraEnv: []
+  #  - name: SOME_VAR
+  #    value: 'some value'
+
+  ## Additional container ports
+  ## _____________________________________________________________________________
+  extraPorts:
+    - name: http
+      containerPort: 4040
+      protocol: TCP
+
+  ## Additional volumeMounts to be added to container
+  ## _____________________________________________________________________________
+  extraVolumeMounts:
+    - name: config
+      mountPath: /tmp
+      readOnly: true
+
+  ## Additional volumes to be added to pods
+  ## _____________________________________________________________________________
+  extraVolumes:
+    - name: config
+      secret:
+        secretName: ngrok
+
+  ## Pod resource requests & limits
+  ## _____________________________________________________________________________
+  resources:
+    enabled: true
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 1
+      memory: 1024Mi
+
+  ## To disable set the following configuration to null:
+  ## _____________________________________________________________________________
+  containerSecurityContext: null
+  # containerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   runAsUser: 1001
+  #   runAsGroup: 2001
+
+  ## Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## _____________________________________________________________________________
+  nodeSelector: {}
+
+  ## Name of Priority Class of pods
+  ## _____________________________________________________________________________
+  # priorityClassName: ""
+
+  ## List of node taints to tolerate (requires Kubernetes >= 1.6)
+  ## _____________________________________________________________________________
+  tolerations: []
+  #  - key: "key"
+  #    operator: "Equal|Exists"
+  #    value: "value"
+  #    effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+  ## Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## _____________________________________________________________________________
+  affinity: {}

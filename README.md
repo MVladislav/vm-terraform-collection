@@ -9,6 +9,8 @@
 - [Terraform Collection](#terraform-collection)
   - [install](#install)
   - [general commands](#general-commands)
+    - [terraform](#terraform)
+    - [kubernetes](#kubernetes)
   - [References](#references)
 
 ---
@@ -24,6 +26,8 @@ $sudo apt update && sudo apt install terraform
 
 ## general commands
 
+### terraform
+
 setup initial sources:
 
 ```sh
@@ -36,10 +40,18 @@ check script:
 $terraform plan
 ```
 
-eun script:
+run script:
 
 ```sh
 $terraform apply
+```
+
+### kubernetes
+
+list everything:
+
+```sh
+$kubectl api-resources --verbs=list --namespaced -o name | xargs -n 1 kubectl get --show-kind --ignore-not-found -n <namespace>
 ```
 
 ---

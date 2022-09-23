@@ -1,0 +1,281 @@
+---
+## BASE
+## _____________________________________________________________________________
+nameOverride: ""
+fullnameOverride: ""
+
+## SERVICE
+## _____________________________________________________________________________
+service:
+  type: ClusterIP # ClusterIP | NodePort
+  targetName: http
+  targetPort: 5000
+  targetProtocol: TCP # TCP | UDP
+  externalPort: 5000
+
+## INGRES
+## _____________________________________________________________________________
+ingress:
+  enabled: true
+
+  annotations:
+    cert-manager.io/cluster-issuer: cert-manager-cert-cluster-issuer
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: ""
+    kubernetes.io/tls-acme: "true"
+  className: traefik
+
+  paths:
+    - "/"
+  hosts:
+    - checkmk.home.local
+
+  tls: true
+  secretName: checkmk-home-local
+
+  customPaths: []
+
+## SECRET
+## _____________________________________________________________________________
+secretCredential:
+  enabled: true
+  type: Opaque
+  data:
+    # Sets cmk as default password.
+    # To set your own password, replace it, e.g.
+    # using "echo -n 'password' | base64"
+    password: <PASSWORD-BASE64 run `echo -n 'password' | base64`>
+
+secretToken:
+  enabled: true
+  annotations:
+    kubernetes.io/service-account.name: checkmk-account
+  type: kubernetes.io/service-account-token
+
+## CONFIG_MAP
+## _____________________________________________________________________________
+configMap:
+  enabled: true
+  data:
+    # Set the name of the Checkmk site
+    siteid: "checkmk"
+
+## SERVICE_ACCOUNT
+## _____________________________________________________________________________
+serviceAccount:
+  create: true
+  name: checkmk-account
+  automountServiceAccountToken: false
+  clusterRole:
+    rules:
+      - apiGroups:
+          - ""
+          - storage.k8s.io
+          - rbac.authorization.k8s.io
+          - apps
+          - extensions
+          - batch
+          - autoscaling
+          - networking.k8s.io/v1beta1
+        resources:
+          - componentstatuses
+          - nodes
+          - nodes/proxy
+          - services
+          - pods
+          - configmaps
+          - secrets
+          - resourcequotas
+          - replicationcontrollers
+          - limitranges
+          - persistentvolumeclaims
+          - persistentvolumes
+          - namespaces
+          - endpoints
+          - storageclasses
+          - clusterroles
+          - roles
+          - daemonsets
+          - deployments
+          - replicasets
+          - ingresses
+          - statefulsets
+          - cronjobs
+          - jobs
+          - horizontalpodautoscalers
+        verbs:
+          - get
+          - list
+      - apiGroups:
+          - custom.metrics.k8s.io
+        resources:
+          - "*"
+        verbs:
+          - get
+          - list
+      - nonResourceURLs:
+          - /version
+          - /healthz
+          - /metrics
+        verbs: ["get"]
+
+## PERSISTENT_VOLUME_CLAIM
+## =============================================================================
+persistentVolumeClaim:
+  enabled: true
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  storage: 4Gi
+  storageClass: ""
+  velero:
+    enabled: false
+
+## STATEFUL_SET
+## =============================================================================
+deployment:
+  replicaCount: 2
+  updateStrategy: Recreate # RollingUpdate | Recreate
+
+  ## IMAGE
+  ## _____________________________________________________________________________
+  image:
+    ## Repository for container
+    repository: checkmk/check-mk-free
+    # https://hub.docker.com/r/checkmk/check-mk-free/tags
+    tag: 2.1.0p11
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+
+  # PROBES
+  # current not working
+  # _____________________________________________________________________________
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 5000
+      scheme: HTTP
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 5000
+    # Number of seconds to wait for probe response
+    timeoutSeconds: 5
+    # Number of seconds to wait before sending first probe
+    initialDelaySeconds: 120
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+
+  ## Additional container commands
+  ## _____________________________________________________________________________
+  extraCommands: []
+  #   - ...
+
+  ## Additional container arguments
+  ## _____________________________________________________________________________
+  extraArgs: []
+  #   - --...
+
+  ## Additional container environment variables
+  ## _____________________________________________________________________________
+  extraEnv:
+    - name: CMK_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: checkmk-credential
+          key: password
+    - name: CMK_SITE_ID
+      valueFrom:
+        configMapKeyRef:
+          name: checkmk
+          key: siteid
+
+  ## Additional container ports
+  ## _____________________________________________________________________________
+  extraPorts:
+    - name: http
+      containerPort: 5000 # the port that your application uses
+      protocol: TCP
+
+  ## Additional volumeMounts to be added to container
+  ## _____________________________________________________________________________
+  extraVolumeMounts:
+    - name: localtime
+      mountPath: /etc/localtime
+    - name: tmpfs
+      mountPath: /opt/omd/sites/cmk/tmp
+    - name: data
+      mountPath: /omd/sites
+    # - name: factor-token
+    #   mountPath: /var/run/secrets/tokens
+
+  ## Additional volumes to be added to pods
+  ## _____________________________________________________________________________
+  extraVolumes:
+    - name: localtime
+      hostPath:
+        path: /etc/localtime
+        type: File
+    - name: tmpfs
+      emptyDir:
+        medium: Memory
+        sizeLimit: 64Mi
+    - name: data
+      persistentVolumeClaim:
+        claimName: checkmk
+    # - name: factor-token
+    #   projected:
+    #     sources:
+    #       - serviceAccountToken:
+    #           audience: factors
+    #           expirationSeconds: 600
+    #           path: factor-token
+
+  ## Pod resource requests & limits
+  ## _____________________________________________________________________________
+  resources:
+    enabled: true
+    limits:
+      memory: 4Gi
+      cpu: "3000m"
+    requests:
+      memory: 1Gi
+      cpu: "1000m"
+
+  ## To disable set the following configuration to null:
+  ## _____________________________________________________________________________
+  containerSecurityContext: null
+  # containerSecurityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+  #   runAsUser: 1001
+  #   runAsGroup: 2001
+
+  ## Node labels for pod assignment
+  ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ## _____________________________________________________________________________
+  nodeSelector: {}
+
+  ## Name of Priority Class of pods
+  ## _____________________________________________________________________________
+  # priorityClassName: ""
+
+  ## List of node taints to tolerate (requires Kubernetes >= 1.6)
+  ## _____________________________________________________________________________
+  tolerations: []
+  #   - key: "key"
+  #     operator: "Equal|Exists"
+  #     value: "value"
+  #     effect: "NoSchedule|PreferNoSchedule|NoExecute"
+
+  ## Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## _____________________________________________________________________________
+  affinity: {}

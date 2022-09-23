@@ -1,0 +1,55 @@
+name: datree
+on:
+  push:
+    branches: ["develop"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  DATREE_TOKEN: ${{ secrets.DATREE_TOKEN }}
+
+jobs:
+  # kubePolicyCheck:
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+
+  #     - name: Run Datree Policy Check - Kube-Files
+  #       uses: datreeio/action-datree@main
+  #       with:
+  #         path: "kubernetes/kube/**/*.yaml"
+  #         cliArguments: "--only-k8s-files"
+
+  helmPolicyCheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Run Datree Policy Check - ngrok
+        uses: datreeio/action-datree@main
+        with:
+          path: "kubernetes/helm/ngrok"
+          cliArguments: "--only-k8s-files"
+          isHelmChart: true
+          # helmArguments: "--values values.yaml"
+
+      - name: Run Datree Policy Check - uptime-kuma
+        uses: datreeio/action-datree@main
+        with:
+          path: "kubernetes/helm/uptime-kuma"
+          cliArguments: "--only-k8s-files"
+          isHelmChart: true
+          # helmArguments: "--values values.yaml"
+
+      - name: Run Datree Policy Check - checkmk
+        uses: datreeio/action-datree@main
+        with:
+          path: "kubernetes/helm/checkmk"
+          cliArguments: "--only-k8s-files"
+          isHelmChart: true
+          # helmArguments: "--values values.yaml"
