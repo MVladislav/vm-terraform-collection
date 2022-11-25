@@ -31,25 +31,11 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Run Datree Policy Check - ngrok
-        uses: datreeio/action-datree@main
+        # uses: datreeio/action-datree@main
+        uses: mvladislav/action-datree@main
         with:
-          path: "kubernetes/helm/ngrok"
+          path: "kubernetes/helm"
           cliArguments: "--only-k8s-files"
           isHelmChart: true
           # helmArguments: "--values values.yaml"
-
-      - name: Run Datree Policy Check - uptime-kuma
-        uses: datreeio/action-datree@main
-        with:
-          path: "kubernetes/helm/uptime-kuma"
-          cliArguments: "--only-k8s-files"
-          isHelmChart: true
-          # helmArguments: "--values values.yaml"
-
-      - name: Run Datree Policy Check - checkmk
-        uses: datreeio/action-datree@main
-        with:
-          path: "kubernetes/helm/checkmk"
-          cliArguments: "--only-k8s-files"
-          isHelmChart: true
-          # helmArguments: "--values values.yaml"
+          helmArguments: "--namespace git-test"
