@@ -15,7 +15,7 @@
     - [setup user](#setup-user)
     - [setup token](#setup-token)
   - [setup proxmox vm template](#setup-proxmox-vm-template)
-    - [instructions - ubuntu 22.04 [jammy] template](#instructions---ubuntu-2204-jammy-template)
+    - [instructions - ubuntu 22.10 \[kinetic\] template](#instructions---ubuntu-2210-kinetic-template)
   - [References](#references)
 
 ---
@@ -154,21 +154,26 @@ we need first a template read setuped in proxmox to reference on it in terraform
 Templates need to be setup over console. \
 You need to download an ready `.img` cloudimage for example for [ubuntu](https://cloud-images.ubuntu.com).
 
-### instructions - ubuntu 22.04 [jammy] template
+### instructions - ubuntu 22.10 [kinetic] template
+
+> NOTE: change **img** `kinetic-server-cloudimg-amd64-disk-kvm.img` like needed (also url for download)
+> NOTE: change vm-id `9999` like needed
+> NOTE: check **storage-name** `local-zfs` for your needs
 
 ```sh
 # download the image
-$wget https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64-disk-kvm.img \
--O /var/lib/vz/template/iso/jammy-server-cloudimg.img
+$wget https://cloud-images.ubuntu.com/kinetic/current/kinetic-server-cloudimg-amd64-disk-kvm.img \
+-O /var/lib/vz/template/iso/kinetic-server-cloudimg-amd64-disk-kvm.img
 
 # create a new VM
-$qm create 9999 --name "template-ubuntu-jammy-cloud-init" --memory 2048 --net0 virtio,bridge=vmbr0 \
+$qm create 9999 --name "template-ubuntu-kinetic-cloud-init" --memory 2048 --net0 virtio,bridge=vmbr0 \
 --cpu cputype=host,flags="+aes;+pdpe1gb" --sockets 1 --cores 2 --numa 1
 
 # import the downloaded disk to local-zfs storage
-$qm importdisk 9999 /var/lib/vz/template/iso/jammy-server-cloudimg.img local-zfs
+$qm importdisk 9999 /var/lib/vz/template/iso/kinetic-server-cloudimg-amd64-disk-kvm.img local-zfs
 # finally attach the new disk to the VM as scsi drive
-$qm set 9999 --scsihw virtio-scsi-pci --scsi0 local-zfs:vm-9999-disk-0,ssd=1,discard=on
+# $qm set 9999 --scsihw virtio-scsi-pci --scsi0 local-zfs:vm-9999-disk-0,ssd=1,discard=on,iothread=1
+$qm set 9999 --scsihw virtio-scsi-single --scsi0 local-zfs:vm-9999-disk-0,ssd=1,discard=on,iothread=1
 
 # add cloud-init cd-rom drive
 $qm set 9999 --ide2 local-zfs:cloudinit
