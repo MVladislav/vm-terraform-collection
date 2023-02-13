@@ -87,7 +87,7 @@ spec:
 
 {{- with .Values.deployment.containerSecurityContext }}
           securityContext:
-{{ toYaml . | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.deployment.image.pullSecrets }}

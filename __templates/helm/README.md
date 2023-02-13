@@ -81,7 +81,8 @@ $helm datree test . -- --values values.yaml
 
 ## References
 
-- <>
+- <https://kubernetes.io/docs/concepts/security/>
+- <https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/>
 
 ---
 

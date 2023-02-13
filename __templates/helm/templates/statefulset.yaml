@@ -22,11 +22,11 @@ spec:
         app.kubernetes.io/component: {{ include "helm-kube.fullname" . }}
     spec:
       serviceAccountName: {{ template "helm-kube.serviceAccountName" . }}
-
-# {{- with .Values.statefulSet.securityContext }}
-#       securityContext:
-# {{ toYaml . | nindent 8 }}
-# {{- end }}
+# ..............................................................................
+{{- with .Values.statefulSet.securityContext }}
+      securityContext:
+{{ toYaml . | nindent 8 }}
+{{- end }}
 # ..............................................................................
       containers:
         - name: {{ .Chart.Name }}
@@ -78,7 +78,7 @@ spec:
 
 {{- with .Values.statefulSet.containerSecurityContext }}
           securityContext:
-            {{ toYaml . | nindent 10 }}
+            {{- toYaml . | nindent 12 }}
 {{- end }}
 
 {{- with .Values.statefulSet.image.pullSecrets }}
@@ -90,7 +90,7 @@ spec:
 
 {{- with .Values.statefulSet.nodeSelector }}
       nodeSelector:
-{{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 
 {{- with .Values.statefulSet.priorityClassName }}
@@ -99,7 +99,7 @@ spec:
 
 {{- with .Values.statefulSet.tolerations }}
       tolerations:
-{{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 
       affinity:
@@ -130,5 +130,5 @@ spec:
 
 {{- with .Values.statefulSet.extraVolumes }}
   volumeClaimTemplates:
-{{- toYaml . | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
 {{- end }}

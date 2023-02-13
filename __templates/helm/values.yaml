@@ -4,6 +4,9 @@
 nameOverride: ""
 fullnameOverride: ""
 
+labels:
+  env: demo
+
 ## SERVICE
 ## _____________________________________________________________________________
 service:
@@ -226,6 +229,11 @@ deployment:
       cpu: 1
       memory: 1024Mi
 
+  securityContext: null
+  # securityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
+
   ## To disable set the following configuration to null:
   ## _____________________________________________________________________________
   containerSecurityContext: null
@@ -339,6 +347,11 @@ statefulSet:
     limits:
       cpu: 2
       memory: 200Mi
+
+  securityContext: null
+  # securityContext:
+  #   allowPrivilegeEscalation: false
+  #   readOnlyRootFilesystem: true
 
   ## To disable set the following configuration to null:
   ## _____________________________________________________________________________
